@@ -3,5 +3,5 @@
 // เปิดจากเว็บออนไลน์ (Render) -> ใช้ Backend บน Render
 export const API_BASE =
   typeof window !== 'undefined' && window.location.hostname !== 'localhost'
-    ? 'https://BACKEND-URL.onrender.com/api'
+    ? 'https://pet-adoption-group7-api.onrender.com/api'
     : 'http://localhost:3000/api';
