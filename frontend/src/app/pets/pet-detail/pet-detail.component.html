@@ -1,0 +1,134 @@
+<div style="font-family: 'Prompt', 'Kanit', sans-serif; background-color: #f8fafc; min-height: 100vh; padding: 32px 16px 80px 16px;">
+  <div style="max-width: 640px; margin: 0 auto;">
+
+    <!-- ปุ่มย้อนกลับ -->
+    <div style="margin-bottom: 18px;">
+      <a routerLink="/" style="display: inline-flex; align-items: center; gap: 6px; color: #64748b; font-size: 13.5px; text-decoration: none; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='#16a34a'" onmouseout="this.style.color='#64748b'">
+        <span>←</span> กลับหน้ารายการสัตว์เลี้ยง
+      </a>
+    </div>
+
+    <!-- โหลดข้อมูล -->
+    <div *ngIf="loading" style="background: #ffffff; border-radius: 20px; padding: 60px 24px; text-align: center; color: #64748b; border: 1px solid #e2e8f0;">
+      <div style="font-size: 30px; margin-bottom: 12px;">⏳</div>
+      <div>กำลังโหลดข้อมูลสัตว์เลี้ยง...</div>
+    </div>
+
+    <!-- ข้อความแจ้งเตือน Error -->
+    <div *ngIf="!loading && errorMessage" style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 20px; padding: 32px 24px; text-align: center;">
+      <div style="font-size: 30px; margin-bottom: 8px;">⚠️</div>
+      <p style="color: #b91c1c; margin: 0; font-weight: 500;">{{ errorMessage }}</p>
+    </div>
+
+    <!-- การ์ดรายละเอียดสัตว์เลี้ยง (ถอดแบบ Vercel) -->
+    <div *ngIf="!loading && pet" style="background: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+      
+      <!-- ภาพถ่ายสัตว์เลี้ยง + ป้ายสถานะ -->
+      <div style="width: 100%; height: 380px; position: relative; background: #f1f5f9; overflow: hidden;">
+        <img 
+          [src]="pet.imageUrl || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800&q=80'" 
+          [alt]="pet.name" 
+          style="width: 100%; height: 100%; object-fit: cover;" 
+        />
+        
+        <!-- ป้ายสถานะสีเขียวมุมขวาบน -->
+        <div [style.background]="pet.status === 'AVAILABLE' ? '#dcfce7' : (pet.status === 'PENDING' ? '#fef08a' : (pet.status === 'ADOPTED' ? '#e2e8f0' : '#fee2e2'))" [style.color]="pet.status === 'AVAILABLE' ? '#166534' : (pet.status === 'PENDING' ? '#854d0e' : (pet.status === 'ADOPTED' ? '#475569' : '#b91c1c'))" style="position: absolute; top: 18px; right: 18px; backdrop-filter: blur(4px); padding: 6px 16px; border-radius: 9999px; font-size: 13px; font-weight: 700; border: 1px solid #bbf7d0; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+          {{ getStatusThai(pet.status) }}
+        </div>
+      </div>
+
+      <!-- เนื้อหาข้อมูล -->
+      <div style="padding: 32px 28px;">
+        
+        <!-- วันที่เข้ามาที่ศูนย์ -->
+        <div style="font-size: 13px; color: #94a3b8; margin-bottom: 6px;">
+          เข้ามาที่ศูนย์เมื่อ {{ pet.arrivedDate ? (pet.arrivedDate | date:'d MMMM yyyy') : '-' }}
+        </div>
+
+        <!-- ชื่อสัตว์เลี้ยง -->
+        <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0 0 16px 0;">
+          {{ pet.name }}
+        </h1>
+
+        <!-- ป้ายแท็กสไตล์ Vercel -->
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;">
+          <span style="background: #f8fafc; color: #475569; padding: 5px 14px; border-radius: 9999px; font-size: 13px; font-weight: 500; border: 1px solid #e2e8f0; display: inline-flex; align-items: center; gap: 4px;">
+            🐾 {{ pet.petType?.name || '-' }}
+          </span>
+          <span *ngIf="pet.breed" style="background: #f8fafc; color: #475569; padding: 5px 14px; border-radius: 9999px; font-size: 13px; font-weight: 500; border: 1px solid #e2e8f0; display: inline-flex; align-items: center; gap: 4px;">
+            {{ pet.breed }}
+          </span>
+          <span style="background: #f8fafc; color: #475569; padding: 5px 14px; border-radius: 9999px; font-size: 13px; font-weight: 500; border: 1px solid #e2e8f0; display: inline-flex; align-items: center; gap: 4px;">
+            ⚧ เพศ{{ getGenderThai(pet.gender) }}
+          </span>
+        </div>
+
+        <!-- กล่องข้อมูลอายุ -->
+        <div style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; margin-bottom: 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+          <span style="font-size: 22px;">🎂</span>
+          <div>
+            <div style="font-size: 12px; color: #94a3b8; font-weight: 500;">อายุ</div>
+            <div style="font-size: 15px; font-weight: 700; color: #1e293b;">{{ pet.ageMonths ? pet.ageMonths + ' เดือน' : '-' }}</div>
+          </div>
+        </div>
+
+        <!-- เรื่องราวสัตว์เลี้ยง -->
+        <div *ngIf="pet.description" style="margin-bottom: 28px;">
+          <h3 style="font-size: 17px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0;">
+            เรื่องของ {{ pet.name }}
+          </h3>
+          <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0; white-space: pre-line;">
+            {{ pet.description }}
+          </p>
+        </div>
+
+        <!-- บันทึกสุขภาพ -->
+        <div *ngIf="pet.healthNote" style="margin-bottom: 28px;">
+          <h3 style="font-size: 17px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0;">บันทึกสุขภาพ</h3>
+          <p style="font-size: 14px; color: #475569; line-height: 1.7; margin: 0;">{{ pet.healthNote }}</p>
+        </div>
+
+        <!-- กล่องติดต่อสีเขียวอ่อน (สไตล์ Vercel) พร้อมปุ่มยื่นฟอร์มรับเลี้ยง -->
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 24px; margin-top: 32px;">
+          
+          <h4 style="font-size: 16px; font-weight: 700; color: #166534; margin: 0 0 8px 0;">
+            สนใจรับเลี้ยง? ติดต่อศูนย์ได้เลย
+          </h4>
+          
+          <p style="font-size: 13px; color: #475569; margin: 0 0 18px 0; line-height: 1.5;">
+            เริ่มต้นกระบวนการด้วยการกรอกแบบฟอร์ม หรือติดต่อสอบถามข้อมูลเพิ่มเติมกับเจ้าหน้าที่
+          </p>
+
+          <!-- ปุ่มสีเขียวสำหรับกดไปหน้าฟอร์มรับเลี้ยง -->
+          <a 
+            *ngIf="pet.status === 'AVAILABLE'"
+            [routerLink]="['/pets', pet.id, 'adopt']"
+            style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #16a34a; color: #ffffff; padding: 13px 0; border-radius: 10px; font-size: 15px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); box-sizing: border-box; transition: 0.2s;"
+            onmouseover="this.style.background='#15803d'"
+            onmouseout="this.style.background='#16a34a'"
+          >
+            <span>📝</span> กรอกแบบฟอร์มขอรับเลี้ยง {{ pet.name }}
+          </a>
+
+          <!-- ช่องทางติดต่อศูนย์ -->
+          <div style="font-size: 13px; color: #334155; line-height: 2; margin-top: 18px;">
+            <div>📞 โทร: 02-123-4567</div>
+            <div>💬 Line: @baanpakjai &nbsp;|&nbsp; 📘 Facebook: บ้านพักใจ</div>
+            <div>📍 ที่อยู่: 123 ถ.สุขุมวิท แขวงคลองรัก กรุงเทพฯ 10110</div>
+          </div>
+
+        </div>
+
+        <!-- แก้ไขข้อมูลสัตว์เลี้ยงสำหรับแอดมิน -->
+        <div style="text-align: right; margin-top: 24px;">
+          <a [routerLink]="['/admin', pet.id, 'edit']" style="font-size: 12.5px; color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#16a34a'" onmouseout="this.style.color='#94a3b8'">
+            ✏️ แก้ไขข้อมูลสัตว์เลี้ยงตัวนี้ (สำหรับเจ้าหน้าที่)
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

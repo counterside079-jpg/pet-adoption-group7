@@ -1,0 +1,59 @@
+/* รีเซ็ตขอบหน้าจอ ให้แบนเนอร์สีเขียวยืดเต็มจอ 100% ไม่มีขอบขาว */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  min-height: 100vh;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ===== รองรับหน้าจอมือถือ (Responsive) ===== */
+img {
+  max-width: 100%;
+}
+
+input, select, textarea, button {
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  /* ฟอร์ม 2 คอลัมน์ -> เรียงเป็นคอลัมน์เดียว */
+  .form-2col {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* การ์ดสัตว์ในหน้าแบบฟอร์มรับเลี้ยง -> รูปอยู่บน ข้อความอยู่ล่าง */
+  .adopt-pet-card {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    text-align: center;
+    padding-top: 40px !important;
+  }
+
+  .adopt-pet-photo {
+    width: 100% !important;
+    height: 200px !important;
+  }
+
+  /* หัวข้อใหญ่ไม่ให้ล้นจอ */
+  .page-title,
+  h1 {
+    font-size: 26px !important;
+    line-height: 1.35 !important;
+  }
+
+  /* ไอคอนด้านขวาของขั้นตอนรับเลี้ยงกินที่ ซ่อนไว้บนมือถือ */
+  .step-icon {
+    display: none !important;
+  }
+
+  .site-nav {
+    justify-content: center !important;
+    text-align: center;
+  }
+}

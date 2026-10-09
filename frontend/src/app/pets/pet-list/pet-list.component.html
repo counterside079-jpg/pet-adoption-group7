@@ -1,0 +1,181 @@
+<div style="font-family: 'Prompt', 'Kanit', sans-serif; background-color: #ffffff; min-height: 100vh; width: 100%; margin: 0; padding: 0; display: flex; flex-direction: column;">
+
+  <!-- ==================== 1. Hero Banner สีเขียวเข้ม (ยืดเต็มจอ 100% ติดขอบซ้าย-ขวา) ==================== -->
+  <section style="background: #15803d; color: #ffffff; width: 100%; padding: 64px 20px 76px 20px; text-align: center; box-sizing: border-box; margin: 0;">
+    <div style="max-width: 800px; margin: 0 auto;">
+      
+      <!-- ป้ายแคปซูลเล็ก -->
+      <div style="display: inline-block; background: rgba(20, 83, 45, 0.65); backdrop-filter: blur(4px); padding: 6px 18px; border-radius: 9999px; font-size: 13px; font-weight: 500; margin-bottom: 22px; border: 1px solid rgba(255, 255, 255, 0.2);">
+        ✨ เปิดรับอุปการะสัตว์เลี้ยงเพื่อบ้านที่อบอุ่น
+      </div>
+
+      <!-- หัวข้อใหญ่ -->
+      <h1 style="font-size: 36px; font-weight: 800; line-height: 1.35; margin: 0 0 16px 0; letter-spacing: -0.5px;">
+        มอบความรักและบ้านใหม่<br />ให้เพื่อนสี่ขาที่รอคอยคุณ
+      </h1>
+
+      <!-- คำบรรยายรอง -->
+      <p style="font-size: 14.5px; color: #dcfce7; line-height: 1.6; margin: 0 0 36px 0; font-weight: 400;">
+        สัตว์เลี้ยงทุกตัวผ่านการตรวจสุขภาพเบื้องต้น พร้อมเปิดรับการอุปการะโดยไม่มีค่าใช้จ่าย
+      </p>
+
+      <!-- ช่องค้นหาแคปซูลสีขาว -->
+      <div style="max-width: 620px; margin: 0 auto;">
+        <input 
+          type="text" 
+          [(ngModel)]="searchKeyword" 
+          (input)="applyFilters()" 
+          placeholder="ค้นหาจากชื่อสัตว์เลี้ยง, สายพันธุ์, หรือลักษณะนิสัย..." 
+          style="width: 100%; padding: 15px 26px; border-radius: 9999px; border: none; font-size: 14.5px; font-family: inherit; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18); box-sizing: border-box; outline: none; color: #1e293b;"
+        />
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ==================== 2. ส่วนเนื้อหา & ตัวกรอง ==================== -->
+  <main style="max-width: 1240px; margin: 0 auto; width: 100%; padding: 40px 24px 70px 24px; flex: 1; box-sizing: border-box;">
+
+    <!-- แถบตัวกรองหมวดหมู่ & ตัวเลือกด้านขวา -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 32px;">
+      
+      <!-- ปุ่มตัวกรองประเภทสัตว์เลี้ยง -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+        <button 
+          *ngFor="let t of typeFilters"
+          (click)="selectType(t)"
+          [style.background]="selectedType === t ? '#0f172a' : '#ffffff'"
+          [style.color]="selectedType === t ? '#ffffff' : '#64748b'"
+          [style.border]="selectedType === t ? 'none' : '1px solid #e2e8f0'"
+          style="padding: 8px 20px; border-radius: 9999px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: 0.15s; font-family: inherit;"
+        >
+          {{ t }}
+        </button>
+      </div>
+
+      <!-- ตัวเลือกตัวกรองเพศ & เรียงลำดับ -->
+      <div style="display: flex; gap: 10px;">
+        <select 
+          [(ngModel)]="selectedGender" 
+          (change)="applyFilters()" 
+          style="padding: 8px 16px; border-radius: 9999px; border: 1px solid #cbd5e1; font-size: 13.5px; font-family: inherit; background: #ffffff; color: #475569; outline: none; cursor: pointer;"
+        >
+          <option value="">ทุกเพศ</option>
+          <option value="MALE">เพศผู้</option>
+          <option value="FEMALE">เพศเมีย</option>
+          <option value="UNKNOWN">ไม่ระบุเพศ</option>
+        </select>
+
+        <select 
+          [(ngModel)]="sortBy" 
+          (change)="applyFilters()" 
+          style="padding: 8px 16px; border-radius: 9999px; border: 1px solid #cbd5e1; font-size: 13.5px; font-family: inherit; background: #ffffff; color: #475569; outline: none; cursor: pointer;"
+        >
+          <option value="latest">มาใหม่ล่าสุด</option>
+          <option value="oldest">เข้ามานานที่สุด</option>
+          <option value="name">เรียงตามชื่อ</option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- กำลังโหลดข้อมูล -->
+    <div *ngIf="loading" style="text-align: center; padding: 70px 0; color: #94a3b8;">
+      <div style="font-size: 34px; margin-bottom: 10px;">⏳</div>
+      <div>กำลังโหลดข้อมูลสัตว์เลี้ยง...</div>
+    </div>
+
+    <!-- Error State: โหลดข้อมูลจาก Backend ไม่ได้ -->
+    <div *ngIf="!loading && errorMessage" style="text-align: center; padding: 50px 20px; background: #fef2f2; border: 1.5px solid #f87171; border-radius: 20px;">
+      <div style="font-size: 36px; margin-bottom: 8px;">⚠️</div>
+      <p style="margin: 0 0 16px 0; font-size: 15px; font-weight: 600; color: #b91c1c;">{{ errorMessage }}</p>
+      <button (click)="loadPets()" style="background: #dc2626; color: #ffffff; border: none; padding: 9px 22px; border-radius: 9999px; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit;">
+        ลองใหม่อีกครั้ง
+      </button>
+    </div>
+
+    <!-- กรณีไม่พบข้อมูล -->
+    <div *ngIf="!loading && !errorMessage && filteredPets.length === 0" style="text-align: center; padding: 70px 0; color: #94a3b8; background: #f8fafc; border-radius: 20px; border: 1px dashed #cbd5e1;">
+      <div style="font-size: 40px; margin-bottom: 10px;">🐾</div>
+      <p style="margin: 0; font-size: 15px; font-weight: 500;">ไม่พบข้อมูลสัตว์เลี้ยงที่ตรงกับเงื่อนไข</p>
+    </div>
+
+    <!-- ตารางการ์ดสัตว์เลี้ยง (3 คอลัมน์แบบ Vercel) -->
+    <div *ngIf="!loading && !errorMessage && filteredPets.length > 0" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 28px;">
+      
+      <div 
+        *ngFor="let p of filteredPets"
+        [routerLink]="['/pets', p.id]"
+        style="background: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #f1f5f9; box-shadow: 0 2px 14px rgba(0,0,0,0.04); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none;"
+        onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 28px rgba(0,0,0,0.08)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 14px rgba(0,0,0,0.04)'"
+      >
+        <!-- รูปถ่าย -->
+        <div style="height: 240px; position: relative; background: #f1f5f9; overflow: hidden;">
+          <img 
+            [src]="p.imageUrl || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&q=80'" 
+            [alt]="p.name" 
+            style="width: 100%; height: 100%; object-fit: cover;" 
+          />
+        </div>
+
+        <!-- รายละเอียดสัตว์เลี้ยง -->
+        <div style="padding: 22px 24px;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
+            <h3 style="font-size: 21px; font-weight: 800; color: #0f172a; margin: 0;">
+              {{ p.name }}
+            </h3>
+            <span style="font-size: 13.5px; font-weight: 600; color: #64748b;">
+              {{ formatAge(p.ageMonths) }}
+            </span>
+          </div>
+
+          <!-- ป้ายแท็กข้อมูล -->
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px;">
+            <span style="background: #f1f5f9; color: #475569; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 500;">
+              {{ p.petType?.name || 'สัตว์เลี้ยง' }}
+            </span>
+            <span *ngIf="p.breed" style="background: #f1f5f9; color: #475569; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 500;">
+              {{ p.breed }}
+            </span>
+            <span 
+              [style.background]="p.gender === 'MALE' ? '#eff6ff' : '#fdf2f8'"
+              [style.color]="p.gender === 'MALE' ? '#2563eb' : '#db2777'"
+              style="padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600;"
+            >
+              {{ p.gender === 'MALE' ? 'เพศผู้' : (p.gender === 'FEMALE' ? 'เพศเมีย' : 'ไม่ระบุเพศ') }}
+            </span>
+          </div>
+
+          <!-- คำบรรยายสั้น -->
+          <p style="font-size: 13.5px; color: #64748b; line-height: 1.5; margin: 0 0 20px 0; height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+            {{ p.description || 'ไม่มีข้อมูลเพิ่มเติม' }}
+          </p>
+
+          <!-- ปุ่มดูข้อมูลเพิ่มเติม สีเขียวอ่อนแบบ Vercel -->
+          <div style="text-align: center; background: #f0fdf4; color: #16a34a; font-weight: 700; font-size: 14px; padding: 11px 0; border-radius: 9999px; transition: 0.2s;" onmouseover="this.style.background='#dcfce7'" onmouseout="this.style.background='#f0fdf4'">
+            ดูข้อมูลเพิ่มเติม →
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- ==================== 3. Footer เต็มจอ ==================== -->
+  <footer style="background: #ffffff; border-top: 1px solid #f1f5f9; padding: 32px 24px; text-align: center; font-size: 13.5px; color: #64748b; width: 100%; box-sizing: border-box; position: relative;">
+    <div style="margin-bottom: 6px; font-weight: 600; color: #334155;">
+      🏡 บ้านพักใจ — ระบบจัดการและรับเลี้ยงสัตว์เลี้ยง
+    </div>
+    <div style="font-size: 12.5px; color: #94a3b8;">
+      เปิดทำการทุกวัน 09:00 - 17:00 น. | โทร: 02-123-4567 | Line: @baanpakjai
+    </div>
+  </footer>
+
+</div>

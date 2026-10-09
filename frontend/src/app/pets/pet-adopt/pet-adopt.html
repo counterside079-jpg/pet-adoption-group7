@@ -1,0 +1,329 @@
+<div style="font-family: 'Prompt', 'Kanit', sans-serif; background-color: #f8fafc; min-height: 100vh; padding: 40px 16px 80px 16px;">
+  <div style="max-width: 860px; margin: 0 auto;">
+
+    <!-- ==========================================
+         ส่วนที่ 1: กล่องสรุปข้อมูลสัตว์เลี้ยง (ธีมสีเขียว)
+         ========================================== -->
+    <div style="background: #ffffff; border-radius: 16px; border: 2px solid #16a34a; padding: 32px 24px; margin-bottom: 32px; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+      <h2 style="text-align: center; font-size: 24px; font-weight: 700; color: #1e293b; margin: 0 0 24px 0;">
+        กระบวนการรับเลี้ยงสัตว์
+      </h2>
+
+      <!-- การ์ดแสดงรูปและข้อมูลสัตว์เลี้ยง -->
+      <div *ngIf="pet" class="adopt-pet-card" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; gap: 24px; align-items: center; position: relative; max-width: 740px; margin: 0 auto 24px auto; background: #ffffff;">
+        
+        <!-- ปุ่มลบมุมขวาบน -->
+        <button 
+          (click)="removeSelectedPet()" 
+          title="ยกเลิกการเลือกสัตว์เลี้ยงตัวนี้"
+          style="position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 13px; color: #64748b; cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: inherit; font-weight: 500;"
+        >
+          ลบ 🗑️
+        </button>
+
+        <!-- รูปถ่ายสัตว์เลี้ยง -->
+        <div class="adopt-pet-photo" style="width: 140px; height: 140px; flex-shrink: 0; border-radius: 10px; overflow: hidden; background: #f1f5f9;">
+          <img 
+            [src]="pet.imageUrl || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&q=80'" 
+            [alt]="pet.name" 
+            style="width: 100%; height: 100%; object-fit: cover;" 
+          />
+        </div>
+
+        <!-- รายละเอียดสัตว์เลี้ยง -->
+        <div style="flex-grow: 1;">
+          <h3 style="font-size: 26px; font-weight: 800; color: #16a34a; margin: 0 0 6px 0;">
+            {{ pet.name }}
+          </h3>
+          <p style="font-size: 14px; color: #475569; margin: 0 0 6px 0; font-weight: 500;">
+            {{ getGenderThai(pet.gender) }}, {{ pet.breed || 'ไม่ระบุสายพันธุ์' }}
+          </p>
+          <p style="font-size: 13.5px; color: #64748b; margin: 0;">
+            {{ formatAge(pet.ageMonths) }}
+          </p>
+        </div>
+
+      </div>
+
+      <!-- ปุ่ม VIEW ALL PETS สีเขียว -->
+      <div style="text-align: center;">
+        <a 
+          routerLink="/" 
+          style="display: inline-block; background: #16a34a; color: #ffffff; padding: 12px 36px; border-radius: 6px; font-weight: 700; text-decoration: none; font-size: 14px; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25); transition: 0.2s;"
+          onmouseover="this.style.background='#15803d'"
+          onmouseout="this.style.background='#16a34a'"
+        >
+          VIEW ALL PETS
+        </a>
+      </div>
+    </div>
+
+
+    <!-- ==========================================
+         ส่วนที่ 2: ขั้นตอนการรับเลี้ยง (5 สเต็ป Timeline สีเขียว)
+         ========================================== -->
+    <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 48px 32px; margin-bottom: 32px; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+      
+      <div style="width: 140px; height: 3px; background: #16a34a; margin: 0 auto 20px auto; border-radius: 2px;"></div>
+
+      <h2 style="text-align: center; font-size: 24px; font-weight: 800; color: #1e293b; margin: 0 0 16px 0;">
+        ขั้นตอนการรับเลี้ยง
+      </h2>
+
+      <p style="text-align: center; max-width: 680px; margin: 0 auto 48px auto; font-size: 13.5px; color: #475569; line-height: 1.7;">
+        การรับเลี้ยงสัตว์เลี้ยงจากบ้านพักใจเป็นหนึ่งในวิธีสนับสนุนการช่วยเหลือสัตว์ที่มีประสิทธิภาพมากที่สุด เนื่องจากการรับเลี้ยงแต่ละครั้งจะช่วยเพิ่มพื้นที่ดูแลสัตว์ที่ต้องการความช่วยเหลือให้มากขึ้น และเป็นการมอบโอกาสให้พวกเขาได้รู้จักกับความรักและการมีชีวิตที่ปลอดภัย
+      </p>
+
+      <div style="max-width: 740px; margin: 0 auto; position: relative;">
+        <!-- เส้นแกนสีเขียวอ่อน -->
+        <div style="position: absolute; left: 19px; top: 20px; bottom: 20px; width: 2px; background: #bbf7d0; z-index: 1;"></div>
+
+        <!-- ขั้นตอนที่ 1 -->
+        <div style="position: relative; display: flex; align-items: flex-start; gap: 24px; margin-bottom: 36px; z-index: 2;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: #16a34a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);">
+            1
+          </div>
+          <div style="flex-grow: 1; padding-top: 4px; padding-bottom: 24px; border-bottom: 1px solid #f1f5f9;">
+            <h4 style="font-size: 16px; font-weight: 800; color: #16a34a; margin: 0 0 6px 0;">การสอบถามข้อมูลเบื้องต้น</h4>
+            <p style="font-size: 13.5px; color: #475569; line-height: 1.6; margin: 0;">
+              กรอกข้อมูลสำหรับการรับเลี้ยง โดยตอบคำถามเบื้องต้นเกี่ยวกับครอบครัว รูปแบบการใช้ชีวิต และสัตว์เลี้ยงในอุดมคติของคุณ
+            </p>
+          </div>
+          <div class="step-icon" style="width: 56px; height: 56px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              <line x1="12" y1="11" x2="12" y2="17"></line>
+              <line x1="9" y1="14" x2="15" y2="14"></line>
+            </svg>
+          </div>
+        </div>
+
+        <!-- ขั้นตอนที่ 2 -->
+        <div style="position: relative; display: flex; align-items: flex-start; gap: 24px; margin-bottom: 36px; z-index: 2;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: #ffffff; border: 2px solid #16a34a; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0;">
+            2
+          </div>
+          <div style="flex-grow: 1; padding-top: 4px; padding-bottom: 24px; border-bottom: 1px solid #f1f5f9;">
+            <h4 style="font-size: 16px; font-weight: 800; color: #16a34a; margin: 0 0 6px 0;">การสัมภาษณ์</h4>
+            <p style="font-size: 13.5px; color: #475569; line-height: 1.6; margin: 0;">
+              สัมภาษณ์ผ่านทางวิดีโอคอลกับทีมงานหาบ้านของเรา เพื่อให้เราช่วยหาน้องที่เหมาะสมที่สุดสำหรับคุณ รวมถึงพูดคุยเกี่ยวกับประวัติทางการแพทย์ ความต้องการด้านพฤติกรรม และอื่น ๆ
+            </p>
+          </div>
+          <div class="step-icon" style="width: 56px; height: 56px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              <path d="M8 9h.01"></path>
+              <path d="M12 9h.01"></path>
+              <path d="M16 9h.01"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- ขั้นตอนที่ 3 -->
+        <div style="position: relative; display: flex; align-items: flex-start; gap: 24px; margin-bottom: 36px; z-index: 2;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: #16a34a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);">
+            3
+          </div>
+          <div style="flex-grow: 1; padding-top: 4px; padding-bottom: 24px; border-bottom: 1px solid #f1f5f9;">
+            <h4 style="font-size: 16px; font-weight: 800; color: #16a34a; margin: 0 0 6px 0;">การประเมินบ้าน</h4>
+            <p style="font-size: 13.5px; color: #475569; line-height: 1.6; margin: 0;">
+              ดำเนินการตรวจสอบบ้าน - ไม่ว่าจะเป็นแบบลงพื้นที่จริงหรือแบบออนไลน์ - ร่วมกับเจ้าหน้าที่หรืออาสาสมัครของเรา เพื่อให้แน่ใจว่าคุณได้เตรียมทุกอย่างพร้อมสำหรับการดูแล
+            </p>
+          </div>
+          <div class="step-icon" style="width: 56px; height: 56px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="9" y1="13" x2="15" y2="13"></line>
+              <line x1="9" y1="17" x2="13" y2="17"></line>
+            </svg>
+          </div>
+        </div>
+
+        <!-- ขั้นตอนที่ 4 -->
+        <div style="position: relative; display: flex; align-items: flex-start; gap: 24px; margin-bottom: 36px; z-index: 2;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: #ffffff; border: 2px solid #16a34a; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0;">
+            4
+          </div>
+          <div style="flex-grow: 1; padding-top: 4px; padding-bottom: 24px; border-bottom: 1px solid #f1f5f9;">
+            <h4 style="font-size: 16px; font-weight: 800; color: #16a34a; margin: 0 0 6px 0;">ข้อตกลงการรับเลี้ยง</h4>
+            <p style="font-size: 13.5px; color: #475569; line-height: 1.6; margin: 0;">
+              ลงนามในข้อตกลงการรับเลี้ยง โดยยืนยันถึงความตั้งใจของคุณในการดูแลสัตว์เลี้ยงที่คุณเลือกอย่างดีที่สุด
+            </p>
+          </div>
+          <div class="step-icon" style="width: 56px; height: 56px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+              <circle cx="8" cy="12" r="2.5"></circle>
+              <path d="M14 10h4"></path>
+              <path d="M14 14h3"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- ขั้นตอนที่ 5 -->
+        <div style="position: relative; display: flex; align-items: flex-start; gap: 24px; z-index: 2;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: #16a34a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);">
+            5
+          </div>
+          <div style="flex-grow: 1; padding-top: 4px;">
+            <h4 style="font-size: 16px; font-weight: 800; color: #16a34a; margin: 0 0 6px 0;">การจัดเตรียมการเดินทาง</h4>
+            <p style="font-size: 13.5px; color: #475569; line-height: 1.6; margin: 0;">
+              ให้ทีมขนส่งของเราดูแลการเดินทางของสัตว์เลี้ยง คุณเพียงรอรับเพื่อนที่แสนดีคนใหม่ของคุณจากสถานที่ที่นัดหมายไว้ และใช้ชีวิตอย่างมีความสุขร่วมกันตลอดไป!
+            </p>
+          </div>
+          <div class="step-icon" style="width: 56px; height: 56px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <path d="M9 22V12h6v10"></path>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ==========================================
+         ส่วนที่ 3: แบบฟอร์มกรอกข้อมูลขอรับเลี้ยง (กรอบสีเขียว)
+         ========================================== -->
+    <div style="background: #ffffff; border-radius: 16px; border: 2px solid #16a34a; padding: 40px; box-shadow: 0 4px 16px rgba(0,0,0,0.03);">
+      <p style="font-size: 14px; color: #334155; line-height: 1.6; margin: 0 0 24px 0; font-weight: 500;">
+        กรุณากรอกแบบฟอร์มด้านล่างนี้ และสมาชิกในทีมการรับเลี้ยงของเราจะได้รับการแจ้งเตือนเกี่ยวกับคำขอของคุณและจะติดต่อกลับหาคุณโดยเร็วที่สุด
+      </p>
+
+      <form [formGroup]="adoptForm" (ngSubmit)="onSubmit()">
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">คำนำหน้า</label>
+          <select formControlName="prefix" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 14px; background: #ffffff;">
+            <option value="">- ไม่มี -</option>
+            <option value="นาย">นาย</option>
+            <option value="นาง">นาง</option>
+            <option value="นางสาว">นางสาว</option>
+          </select>
+        </div>
+
+        <div class="form-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">ชื่อ <span style="color: #16a34a;">*</span></label>
+            <input type="text" formControlName="firstName" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">นามสกุล <span style="color: #16a34a;">*</span></label>
+            <input type="text" formControlName="lastName" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">ที่อยู่บรรทัดที่ 1</label>
+          <input type="text" formControlName="address1" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">ที่อยู่บรรทัดที่ 2</label>
+          <input type="text" formControlName="address2" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+        </div>
+
+        <div class="form-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">เมือง / จังหวัด <span style="color: #16a34a;">*</span></label>
+            <input type="text" formControlName="city" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">รหัสไปรษณีย์ <span style="color: #16a34a;">*</span></label>
+            <input type="text" formControlName="postalCode" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">ประเทศ <span style="color: #16a34a;">*</span></label>
+          <select formControlName="country" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; background: #ffffff;">
+            <option value="Thailand">Thailand</option>
+          </select>
+        </div>
+
+        <div class="form-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">อีเมล <span style="color: #16a34a;">*</span></label>
+            <input type="email" formControlName="email" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">ยืนยันอีเมลอีกครั้ง <span style="color: #16a34a;">*</span></label>
+            <input type="email" formControlName="confirmEmail" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+          </div>
+        </div>
+
+        <div class="form-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">หมายเลขโทรศัพท์ <span style="color: #16a34a;">*</span></label>
+            <input type="tel" formControlName="phone" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">รายละเอียดการติดต่อผ่าน Line / Facebook / Whatsapp</label>
+            <input type="text" formControlName="socialContact" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">สนามบินนานาชาติหรือจุดรับส่งสัตว์เลี้ยงที่ใกล้ที่สุด</label>
+          <input type="text" formControlName="nearestAirport" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">คุณอาศัยอยู่กับใครบ้างในครัวเรือน?</label>
+          <input type="text" formControlName="householdMembers" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">สมาชิกทุกคนในครัวเรือนยินยอมรับผิดชอบร่วมกันในการรับเลี้ยงหรือไม่?</label>
+          <input type="text" formControlName="householdAgreement" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">คุณมีสัตว์เลี้ยงอื่นหรือไม่? (ถ้ามี ระบุอายุ พันธุ์ เพศ บุคลิกภาพ)</label>
+          <input type="text" formControlName="otherPets" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">กรุณาบรรยายเกี่ยวกับสถานที่และที่ตั้งของบ้านคุณ</label>
+          <input type="text" formControlName="housingDetails" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">คุณทำงานอะไรและทำงานกี่ชั่วโมงต่อวัน?</label>
+          <input type="text" formControlName="occupationAndHours" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;" />
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">กรุณาบอกข้อมูลเพิ่มเติมเกี่ยวกับตัวคุณและเหตุผลที่สนใจรับเลี้ยง <span style="color: #16a34a;">*</span></label>
+          <textarea rows="4" formControlName="adoptionReason" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px;">รับข้อมูลเพิ่มเติมจากศูนย์</label>
+          <select formControlName="receiveNews" style="width: 100%; padding: 12px 16px; border: 1.5px solid #16a34a; border-radius: 6px; font-family: inherit; background: #ffffff;">
+            <option value="ต้องการรับข่าวสาร">ต้องการรับข่าวสาร</option>
+            <option value="ไม่ต้องการรับข่าวสาร">ไม่ต้องการรับข่าวสาร</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 32px; display: flex; align-items: flex-start; gap: 10px;">
+          <input type="checkbox" id="agreeDonate" formControlName="agreeDonationInfo" style="margin-top: 4px;" />
+          <label for="agreeDonate" style="font-size: 13px; color: #64748b; line-height: 1.5; cursor: pointer;">
+            กรุณาทำเครื่องหมายหากคุณต้องการข้อมูลเกี่ยวกับการบริจาคเพื่อสนับสนุนสัตว์ในความดูแลของศูนย์
+          </label>
+        </div>
+
+        <!-- ปุ่มยืนยันสีเขียวสดใส -->
+        <div style="text-align: center;">
+          <button type="submit" [disabled]="submitting" style="background: #16a34a; color: #ffffff; padding: 14px 56px; border-radius: 6px; font-weight: 700; font-size: 16px; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+            {{ submitting ? 'กำลังส่งข้อมูล...' : 'ยืนยัน' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</div>

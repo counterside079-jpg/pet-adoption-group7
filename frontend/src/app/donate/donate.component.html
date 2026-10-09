@@ -1,0 +1,101 @@
+<div style="font-family: 'Prompt', 'Kanit', sans-serif; background-color: #f8fafc; min-height: 100vh; padding: 32px 16px 80px 16px;">
+  <div style="max-width: 640px; margin: 0 auto;">
+
+    <!-- หัวข้อ -->
+    <div style="background: #15803d; color: #ffffff; border-radius: 20px; padding: 32px 24px; text-align: center; margin-bottom: 24px;">
+      <div style="font-size: 40px; margin-bottom: 8px;">💛</div>
+      <h1 class="page-title" style="font-size: 28px; font-weight: 800; margin: 0 0 8px 0;">ร่วมบริจาคให้บ้านพักใจ</h1>
+      <p style="font-size: 14px; color: #dcfce7; margin: 0; line-height: 1.6;">
+        เงินบริจาคทุกบาทใช้เป็นค่าอาหาร ค่ารักษา และค่าวัคซีนของเพื่อนสี่ขาในศูนย์
+      </p>
+    </div>
+
+    <!-- บริจาคสำเร็จ -->
+    <div *ngIf="success" style="background: #ffffff; border: 1.5px solid #86efac; border-radius: 20px; padding: 40px 24px; text-align: center;">
+      <div style="font-size: 48px; margin-bottom: 8px;">🎉</div>
+      <h2 style="font-size: 22px; font-weight: 800; color: #15803d; margin: 0 0 8px 0;">ขอบคุณสำหรับน้ำใจของคุณ</h2>
+      <p style="font-size: 15px; color: #334155; margin: 0 0 6px 0;">
+        บันทึกการแจ้งบริจาค <b>{{ donatedAmount | number }} บาท</b> แล้ว
+      </p>
+      <p style="font-size: 13.5px; color: #64748b; margin: 0 0 24px 0;">เจ้าหน้าที่จะตรวจสอบยอดและยืนยันการรับเงินอีกครั้ง</p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <button type="button" (click)="donateAgain()" style="background: #f0fdf4; color: #15803d; border: 1px solid #86efac; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; font-family: inherit;">บริจาคอีกครั้ง</button>
+        <a routerLink="/" style="background: #15803d; color: #ffffff; padding: 12px 24px; border-radius: 12px; font-weight: 700; text-decoration: none;">กลับหน้าหลัก</a>
+      </div>
+    </div>
+
+    <!-- ฟอร์มบริจาค -->
+    <form *ngIf="!success" [formGroup]="form" (ngSubmit)="onSubmit()" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 28px 24px;">
+
+      <div *ngIf="errorMessage" style="background: #fef2f2; border-left: 4px solid #ef4444; color: #b91c1c; padding: 12px 14px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; white-space: pre-line;">
+        ⚠️ {{ errorMessage }}
+      </div>
+
+      <!-- จำนวนเงิน -->
+      <label style="display: block; font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 8px;">จำนวนเงิน (บาท) <span style="color: #16a34a;">*</span></label>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+        <button *ngFor="let a of presetAmounts" type="button" (click)="setAmount(a)"
+          [style.background]="form.value.amount == a ? '#15803d' : '#f0fdf4'"
+          [style.color]="form.value.amount == a ? '#ffffff' : '#15803d'"
+          style="flex: 1 1 70px; padding: 10px 8px; border: 1px solid #86efac; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit;">
+          {{ a | number }}
+        </button>
+      </div>
+      <input type="number" formControlName="amount" min="1" placeholder="หรือกรอกจำนวนเอง"
+        style="width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 15px; font-family: inherit; margin-bottom: 4px;"
+        [style.borderColor]="isInvalid('amount') ? '#ef4444' : '#cbd5e1'" />
+      <div *ngIf="isInvalid('amount')" style="color: #dc2626; font-size: 13px; margin-bottom: 8px;">จำนวนเงินต้องอยู่ระหว่าง 1 ถึง 1,000,000 บาท</div>
+
+      <!-- ช่องทาง -->
+      <label style="display: block; font-size: 14px; font-weight: 700; color: #334155; margin: 16px 0 8px 0;">ช่องทางการบริจาค <span style="color: #16a34a;">*</span></label>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;">
+        <label *ngFor="let m of methods" style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; cursor: pointer; font-size: 14px; color: #334155;"
+          [style.borderColor]="form.value.method === m[0] ? '#16a34a' : '#e2e8f0'"
+          [style.background]="form.value.method === m[0] ? '#f0fdf4' : '#ffffff'">
+          <input type="radio" formControlName="method" [value]="m[0]" />
+          {{ m[1] }}
+        </label>
+      </div>
+      <div *ngIf="form.value.method === 'PROMPTPAY' || form.value.method === 'TRANSFER'" style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #475569; margin-bottom: 8px; line-height: 1.6;">
+        <span *ngIf="form.value.method === 'PROMPTPAY'">พร้อมเพย์: <b>0-0000-00000-00-0 (เลขตัวอย่าง)</b></span>
+        <span *ngIf="form.value.method === 'TRANSFER'">บัญชี: <b>ธนาคารตัวอย่าง 000-0-00000-0 ชื่อบัญชี มูลนิธิบ้านพักใจ (ตัวอย่าง)</b></span>
+        <br />โอนแล้วกด "ยืนยันการบริจาค" เจ้าหน้าที่จะตรวจยอดให้
+      </div>
+
+      <!-- ผู้บริจาค -->
+      <label style="display: block; font-size: 14px; font-weight: 700; color: #334155; margin: 16px 0 6px 0;">ชื่อผู้บริจาค <span style="color: #16a34a;">*</span></label>
+      <input type="text" formControlName="donorName" placeholder="ชื่อ-นามสกุล หรือนามแฝง"
+        style="width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 15px; font-family: inherit;"
+        [style.borderColor]="isInvalid('donorName') ? '#ef4444' : '#cbd5e1'" />
+      <div *ngIf="isInvalid('donorName')" style="color: #dc2626; font-size: 13px; margin-top: 4px;">กรุณากรอกชื่อผู้บริจาค</div>
+
+      <div class="form-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px;">
+        <div>
+          <label style="display: block; font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 6px;">อีเมล</label>
+          <input type="email" formControlName="email" placeholder="ไม่บังคับ"
+            style="width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 15px; font-family: inherit;"
+            [style.borderColor]="isInvalid('email') ? '#ef4444' : '#cbd5e1'" />
+          <div *ngIf="isInvalid('email')" style="color: #dc2626; font-size: 13px; margin-top: 4px;">รูปแบบอีเมลไม่ถูกต้อง</div>
+        </div>
+        <div>
+          <label style="display: block; font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 6px;">เบอร์โทรศัพท์</label>
+          <input type="tel" formControlName="phone" placeholder="ไม่บังคับ"
+            style="width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 15px; font-family: inherit;"
+            [style.borderColor]="isInvalid('phone') ? '#ef4444' : '#cbd5e1'" />
+          <div *ngIf="isInvalid('phone')" style="color: #dc2626; font-size: 13px; margin-top: 4px;">ตัวเลข 9–15 หลัก</div>
+        </div>
+      </div>
+
+      <label style="display: block; font-size: 14px; font-weight: 700; color: #334155; margin: 14px 0 6px 0;">ข้อความถึงศูนย์</label>
+      <textarea rows="3" formControlName="message" placeholder="ไม่บังคับ"
+        style="width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 15px; font-family: inherit;"></textarea>
+
+      <button type="submit" [disabled]="submitting"
+        style="width: 100%; margin-top: 20px; background: #15803d; color: #ffffff; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; font-family: inherit;"
+        [style.opacity]="submitting ? 0.6 : 1">
+        {{ submitting ? 'กำลังบันทึก...' : 'ยืนยันการบริจาค ' + ((form.value.amount || 0) | number) + ' บาท' }}
+      </button>
+      <p style="font-size: 12.5px; color: #94a3b8; text-align: center; margin: 12px 0 0 0;">ระบบนี้บันทึกการแจ้งบริจาคเท่านั้น ไม่ได้ตัดเงินจากบัตรหรือบัญชีของคุณ</p>
+    </form>
+  </div>
+</div>

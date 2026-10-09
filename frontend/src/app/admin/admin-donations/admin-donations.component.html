@@ -1,0 +1,78 @@
+<app-admin-nav active="donations"></app-admin-nav>
+
+<div style="font-family: 'Prompt', 'Kanit', sans-serif; background: #f8fafc; min-height: 100vh; padding: 24px 16px 80px 16px;">
+  <div style="max-width: 1000px; margin: 0 auto;">
+
+    <h1 class="page-title" style="font-size: 26px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0;">💛 การบริจาค</h1>
+    <p style="font-size: 14px; color: #64748b; margin: 0 0 20px 0;">รายการแจ้งบริจาคจากหน้า "ร่วมบริจาค" ตรวจยอดแล้วกด "ได้รับแล้ว"</p>
+
+    <!-- สรุปยอด -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
+      <div style="background: #ffffff; border: 1px solid #bbf7d0; border-radius: 16px; padding: 16px;">
+        <div style="font-size: 13px; color: #15803d; font-weight: 700;">ได้รับแล้ว</div>
+        <div style="font-size: 26px; font-weight: 800; color: #0f172a;">{{ total('RECEIVED') | number: '1.0-2' }} บาท</div>
+        <div style="font-size: 13px; color: #64748b;">{{ count('RECEIVED') }} รายการ</div>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #fde68a; border-radius: 16px; padding: 16px;">
+        <div style="font-size: 13px; color: #a16207; font-weight: 700;">รอตรวจสอบยอด</div>
+        <div style="font-size: 26px; font-weight: 800; color: #0f172a;">{{ total('PENDING') | number: '1.0-2' }} บาท</div>
+        <div style="font-size: 13px; color: #64748b;">{{ count('PENDING') }} รายการ</div>
+      </div>
+    </div>
+
+    <!-- แท็บกรองสถานะ -->
+    <div style="background: #ffffff; border-radius: 16px; padding: 12px; display: flex; gap: 8px; overflow-x: auto; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+      <button *ngFor="let f of filters" type="button" (click)="selectedFilter = f"
+        [style.background]="selectedFilter === f ? '#0f172a' : '#f8fafc'"
+        [style.color]="selectedFilter === f ? '#ffffff' : '#475569'"
+        style="padding: 8px 18px; border-radius: 999px; border: 1px solid #e2e8f0; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit;">
+        {{ filterLabel(f) }} ({{ count(f) }})
+      </button>
+    </div>
+
+    <div *ngIf="loading" style="background: #ffffff; border-radius: 16px; padding: 60px 20px; text-align: center; color: #64748b;">⏳ กำลังโหลดรายการบริจาค...</div>
+
+    <div *ngIf="!loading && errorMessage" style="background: #fef2f2; border: 1.5px solid #f87171; border-radius: 16px; padding: 28px; text-align: center;">
+      <p style="color: #b91c1c; margin: 0 0 12px 0;">⚠️ {{ errorMessage }}</p>
+      <button type="button" (click)="load()" style="background: #ffffff; border: 1px solid #f87171; color: #b91c1c; padding: 8px 18px; border-radius: 10px; cursor: pointer; font-family: inherit;">ลองใหม่อีกครั้ง</button>
+    </div>
+
+    <div *ngIf="!loading && !errorMessage && filtered.length === 0" style="background: #ffffff; border-radius: 16px; padding: 60px 20px; text-align: center; color: #64748b; border: 1px solid #e2e8f0;">
+      ยังไม่มีรายการในหมวดนี้
+    </div>
+
+    <div *ngIf="!loading && !errorMessage" style="display: flex; flex-direction: column; gap: 12px;">
+      <div *ngFor="let d of filtered" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 18px;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: flex-start;">
+          <div style="min-width: 0;">
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+              <span style="font-size: 17px; font-weight: 800; color: #0f172a;">{{ d.donorName }}</span>
+              <span [style.background]="statusBg(d.status)" [style.color]="statusColor(d.status)"
+                style="font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 999px;">{{ statusTh[d.status] }}</span>
+            </div>
+            <div style="font-size: 13.5px; color: #475569; margin-top: 2px;">{{ methodTh[d.method] }} · {{ d.createdAt | date: 'd MMM y, HH:mm' }}</div>
+            <div *ngIf="d.email || d.phone" style="font-size: 13.5px; color: #475569; word-break: break-word;">
+              <span *ngIf="d.phone">📞 {{ d.phone }} </span><span *ngIf="d.email">✉️ {{ d.email }}</span>
+            </div>
+          </div>
+          <div style="font-size: 22px; font-weight: 800; color: #15803d; white-space: nowrap;">{{ d.amount | number: '1.0-2' }} บาท</div>
+        </div>
+
+        <div *ngIf="d.message" style="background: #f8fafc; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 14px; color: #334155; white-space: pre-line; word-break: break-word;">
+          💬 {{ d.message }}
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
+          <button *ngIf="d.status !== 'RECEIVED'" type="button" (click)="setStatus(d, 'RECEIVED')"
+            style="flex: 1 1 120px; background: #15803d; color: #ffffff; border: none; padding: 9px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit;">✅ ได้รับแล้ว</button>
+          <button *ngIf="d.status !== 'PENDING'" type="button" (click)="setStatus(d, 'PENDING')"
+            style="flex: 1 1 120px; background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; padding: 9px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit;">↩ รอตรวจสอบ</button>
+          <button *ngIf="d.status !== 'CANCELLED'" type="button" (click)="setStatus(d, 'CANCELLED')"
+            style="flex: 1 1 120px; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; padding: 9px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit;">✖ ยกเลิก</button>
+          <button type="button" (click)="remove(d)"
+            style="flex: 0 1 90px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 9px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit;">🗑️ ลบ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<!-- แถบเมนูหลัก (ใช้ร่วมกันทุกหน้า) -->
+<header style="background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50;">
+  <div class="site-nav" style="max-width: 1240px; margin: 0 auto; padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center;">
+    <a routerLink="/" style="font-size: 20px; font-weight: 800; color: #15803d; text-decoration: none; white-space: nowrap;">
+      🐾 บ้านพักใจ
+    </a>
+    <nav style="display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center;">
+      <a routerLink="/" style="text-decoration: none; color: #475569; font-weight: 600; font-size: 15px;">สัตว์เลี้ยงทั้งหมด</a>
+      <a routerLink="/donate" style="text-decoration: none; color: #b45309; font-weight: 700; font-size: 15px;">💛 ร่วมบริจาค</a>
+      <a routerLink="/admin" style="text-decoration: none; color: #16a34a; font-weight: 700; font-size: 15px;">⚙️ จัดการระบบ (Admin)</a>
+    </nav>
+  </div>
+</header>
+
+<!-- แต่ละหน้ากำหนดความกว้างและระยะขอบของตัวเอง -->
+<main>
+  <router-outlet></router-outlet>
+</main>

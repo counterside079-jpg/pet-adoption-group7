@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model PetType {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  pets      Pet[]
+}
+
+model Pet {
+  id          Int       @id @default(autoincrement())
+  name        String
+  petTypeId   Int
+  petType     PetType   @relation(fields: [petTypeId], references: [id])
+  status      String    @default("AVAILABLE")
+  gender      String
+  ageMonths   Int
+  weightKg    Float?
+  healthNote  String?
+  arrivedDate DateTime?
+  breed       String?
+  description String?
+  imageUrl    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  adoptionRequests AdoptionRequest[]
+}
+
+// คำขอรับเลี้ยงที่ผู้ใช้กรอกจากหน้าแบบฟอร์ม (1 Pet มีได้หลายคำขอ)
+// ลบสัตว์แล้วคำขอของตัวนั้นถูกลบตาม (onDelete: Cascade)
+model AdoptionRequest {
+  id                 Int      @id @default(autoincrement())
+  petId              Int
+  pet                Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  prefix             String?
+  firstName          String
+  lastName           String
+  email              String
+  phone              String
+  address            String?
+  city               String
+  postalCode         String
+  country            String
+  socialContact      String?
+  nearestAirport     String?
+  householdMembers   String?
+  householdAgreement String?
+  otherPets          String?
+  housingDetails     String?
+  occupationAndHours String?
+  adoptionReason     String
+  receiveNews        Boolean  @default(false)
+  status             String   @default("PENDING") // PENDING | APPROVED | REJECTED
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+// การแจ้งความประสงค์บริจาค (ไม่ได้ตัดเงินจริง เจ้าหน้าที่ตรวจยอดแล้วกดยืนยันเอง)
+model Donation {
+  id        Int      @id @default(autoincrement())
+  donorName String
+  email     String?
+  phone     String?
+  amount    Float
+  method    String   // TRANSFER | PROMPTPAY | CASH
+  message   String?
+  status    String   @default("PENDING") // PENDING | RECEIVED | CANCELLED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
