@@ -52,8 +52,43 @@ input, select, textarea, button {
     display: none !important;
   }
 
+  /* แถบเมนูหลักบนมือถือ: โลโก้ซ้าย ลิงก์ขวา อยู่บรรทัดเดียว */
   .site-nav {
-    justify-content: center !important;
-    text-align: center;
+    flex-wrap: nowrap !important;
+    padding: 10px 12px !important;
+    gap: 8px !important;
+  }
+  .site-nav > a {
+    font-size: 17px !important;
+  }
+  .site-links {
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+  }
+  .site-links a {
+    font-size: 13px !important;
+  }
+
+  /* แถบเมนูเจ้าหน้าที่บนมือถือ: บรรทัดเดียว เลื่อนซ้ายขวาได้ */
+  .admin-bar {
+    flex-wrap: nowrap !important;
+    padding: 8px 12px !important;
+  }
+  .hide-mobile {
+    display: none !important;
+  }
+  .admin-tabs {
+    min-width: 0;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .admin-tabs a,
+  .admin-bar button {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+  }
+  .logout-text {
+    display: none;
   }
 }

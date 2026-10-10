@@ -8,10 +8,10 @@
 
 | ลำดับ | รหัสนักศึกษา | ชื่อ - นามสกุล | บทบาทหน้าที่ |
 | :---: | :---: | :--- | :--- |
-| 1 | 67118729 | วรมันต์ ชูช่วย | **Frontend / UI:** ออกแบบและพัฒนา Angular Components, จัดการ Layout และ Responsive Design ด้วย HTML Inline Styles |
-| 2 | 67108027 | สิทธิชัย ชูแก้ว | **Frontend / Integration:** พัฒนา Angular Service, กำหนด Angular Routing, เชื่อมต่อ REST API และจัดการ State |
-| 3 | 67105601 | พรรษกร นวนดำ | **Backend:** พัฒนา NestJS Controller, Service, DTO, ValidationPipe และ Business Rules |
-| 4 | 67120782 | วิทย์ธวัช คงเทพ | **Database / Integration:** ออกแบบ Database Schema, Prisma ORM, Migration, Seed Data และเชื่อมต่อ PostgreSQL |
+| 1 | 67118729 | วรมันต์ ชูช่วย | **UX/UI & Frontend:** ออกแบบประสบการณ์ผู้ใช้และหน้าตาเว็บ และพัฒนาหน้าเว็บในช่วงแรกของโครงงาน |
+| 2 | 67108027 | สิทธิชัย ชูแก้ว | **System Concept & Presentation:** วางแนวคิดและขอบเขตของระบบ และจัดทำสไลด์นำเสนอ  |
+| 3 | 67105601 | พรรษกร นวนดำ | **Development, Deployment & Documentation:** แก้ไขและพัฒนาเว็บเพิ่มเติม นำระบบขึ้นใช้งานออนไลน์ และจัดทำรายงาน |
+| 4 | 67120782 | วิทย์ธวัช คงเทพ | **UX/UI Design & Presentation:** ออกแบบ UX/UI ของระบบ และจัดทำสไลด์นำเสนอ|
 
 ---
 
