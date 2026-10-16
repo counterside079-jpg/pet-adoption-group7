@@ -30,8 +30,20 @@ export class PetListComponent implements OnInit {
   cover = petCover;
 
   // คำค้นตัวอย่าง: สร้างจากสัตว์ที่มีอยู่จริง ให้หลากหลายแบบละ 1 คำ (ประเภท · สายพันธุ์ · นิสัย · เพศ)
+  // สายพันธุ์ใช้เฉพาะชื่อสายพันธุ์จริงที่เรียกกันทั่วไป (รายการด้านล่าง) ไม่เอาคำที่กรอกกันเอง
   // และแสดงเฉพาะคำที่กดแล้วเจออย่างน้อย 1 ตัว (ไม่ใช้คำตายตัว เพราะถ้าไม่มีสัตว์ตรงคำนั้นจะเจอหน้าว่าง)
   private static readonly TRAITS = ['ขี้อ้อน', 'ขี้เล่น', 'ร่าเริง', 'เชื่อง', 'ใจดี', 'ซน', 'ฉลาด', 'เรียบร้อย', 'ขี้เซา', 'ชอบเล่น', 'เป็นมิตร', 'สงบ'];
+
+  private static readonly BREEDS = [
+    // สุนัข
+    'โกลเด้น', 'ลาบราดอร์', 'ชิวาวา', 'ปอมเมอเรเนียน', 'ชิสุ', 'พุดเดิ้ล', 'บีเกิ้ล', 'ไซบีเรียน', 'คอร์กี้', 'ชิบะ', 'บางแก้ว', 'หลังอาน', 'เฟรนช์บูลด็อก', 'ยอร์คเชียร์',
+    // แมว
+    'เปอร์เซีย', 'สก็อตติชโฟลด์', 'วิเชียรมาศ', 'ขาวมณี', 'โคราช', 'บริติชช็อตแฮร์', 'เมนคูน', 'แร็กดอลล์', 'อเมริกันช็อตแฮร์', 'เบงกอล',
+    // กระต่าย
+    'ฮอลแลนด์ลอป', 'เนเธอร์แลนด์ดวาร์ฟ', 'ไลอ้อนเฮด', 'มินิเร็กซ์',
+    // นก / หนู / ปลา / เต่า
+    'หงส์หยก', 'ค็อกคาเทล', 'เลิฟเบิร์ด', 'แก้วมาคอว์', 'ไจแอนท์', 'ซีเรียน', 'วินเทอร์ไวท์', 'ปลาทอง', 'ปลากัด', 'ซูคาต้า',
+  ];
 
   get searchExamples(): string[] {
     const en = this.i18n.isEn();
@@ -40,14 +52,13 @@ export class PetListComponent implements OnInit {
     const pick = (list: string[]) => list.find((w) => !!w && hit(w));
     const types = Array.from(new Set(pets.map((p) => p.petType?.name).filter((t): t is string => !!t && t !== 'อื่นๆ')));
     const typeWord = (t: string) => (en ? this.i18n.t(t).toLowerCase() : t);
-    const breeds = Array.from(new Set(pets.map((p) => (p.breed || '').trim()).filter((b) => b && b.length <= 20)));
 
     const out: string[] = [];
     const add = (w?: string) => {
       if (w && !out.includes(w)) out.push(w);
     };
     add(types[0] && typeWord(types[0]));                                   // ประเภท
-    add(pick(en ? breeds.filter((b) => /^[\x00-\x7F]+$/.test(b)) : breeds)); // สายพันธุ์
+    if (!en) add(pick(PetListComponent.BREEDS));                            // สายพันธุ์จริง
     if (!en) add(pick(PetListComponent.TRAITS));                            // นิสัย (มาจากคำอธิบาย)
     add(pick(en ? ['female', 'male'] : ['ตัวเมีย', 'ตัวผู้']));             // เพศ
     types.slice(1).forEach((t) => out.length < 5 && add(typeWord(t)));      // ประเภทอื่นเติมให้ครบ
