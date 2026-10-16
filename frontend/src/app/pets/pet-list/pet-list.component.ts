@@ -29,11 +29,24 @@ export class PetListComponent implements OnInit {
   sortBy = 'latest';
   cover = petCover;
 
-  // คำค้นตัวอย่าง กดแล้วค้นทันที (บอกผู้ใช้ว่าค้นจากอะไรได้บ้าง)
+  // คำค้นตัวอย่าง: สร้างจากสัตว์ที่มีอยู่จริงในระบบ และแสดงเฉพาะคำที่ค้นแล้วเจออย่างน้อย 1 ตัว
+  // (ไม่ใช้คำตายตัว เพราะถ้าไม่มีสัตว์ตรงคำนั้น ผู้ใช้กดแล้วจะเจอหน้าว่าง)
   get searchExamples(): string[] {
-    return this.i18n.isEn()
-      ? ['cat', 'female', 'dog male', 'rabbit']
-      : ['แมว', 'ตัวเมีย', 'โกลเด้น', 'ขี้เล่น', 'สุนัข ผู้'];
+    const en = this.i18n.isEn();
+    const types = Array.from(new Set(this.allPets.map((p) => p.petType?.name).filter((t): t is string => !!t && t !== 'อื่นๆ')));
+    const typeWord = (t: string) => (en ? this.i18n.t(t).toLowerCase() : t);
+    const female = en ? 'female' : 'ตัวเมีย';
+    const male = en ? 'male' : 'ตัวผู้';
+    // ผสมให้หลากหลาย: ประเภท 2 คำ → เพศ → ประเภท+เพศ → ประเภทที่เหลือ
+    const candidates: string[] = [
+      ...types.slice(0, 2).map(typeWord),
+      female,
+      male,
+      ...types.flatMap((t) => [`${typeWord(t)} ${female}`, `${typeWord(t)} ${male}`]),
+      ...types.slice(2).map(typeWord),
+    ];
+    const found = candidates.filter((w, i) => candidates.indexOf(w) === i && this.allPets.some((p) => matchesPet(p, w)));
+    return found.slice(0, 5);
   }
 
   // ปุ่มกรองประเภท: ดึงชื่อประเภทจริงจาก Backend (GET /api/pet-types)
