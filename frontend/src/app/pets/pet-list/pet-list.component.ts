@@ -29,24 +29,29 @@ export class PetListComponent implements OnInit {
   sortBy = 'latest';
   cover = petCover;
 
-  // คำค้นตัวอย่าง: สร้างจากสัตว์ที่มีอยู่จริงในระบบ และแสดงเฉพาะคำที่ค้นแล้วเจออย่างน้อย 1 ตัว
-  // (ไม่ใช้คำตายตัว เพราะถ้าไม่มีสัตว์ตรงคำนั้น ผู้ใช้กดแล้วจะเจอหน้าว่าง)
+  // คำค้นตัวอย่าง: สร้างจากสัตว์ที่มีอยู่จริง ให้หลากหลายแบบละ 1 คำ (ประเภท · สายพันธุ์ · นิสัย · เพศ)
+  // และแสดงเฉพาะคำที่กดแล้วเจออย่างน้อย 1 ตัว (ไม่ใช้คำตายตัว เพราะถ้าไม่มีสัตว์ตรงคำนั้นจะเจอหน้าว่าง)
+  private static readonly TRAITS = ['ขี้อ้อน', 'ขี้เล่น', 'ร่าเริง', 'เชื่อง', 'ใจดี', 'ซน', 'ฉลาด', 'เรียบร้อย', 'ขี้เซา', 'ชอบเล่น', 'เป็นมิตร', 'สงบ'];
+
   get searchExamples(): string[] {
     const en = this.i18n.isEn();
-    const types = Array.from(new Set(this.allPets.map((p) => p.petType?.name).filter((t): t is string => !!t && t !== 'อื่นๆ')));
+    const pets = this.allPets;
+    const hit = (w: string) => pets.some((p) => matchesPet(p, w));
+    const pick = (list: string[]) => list.find((w) => !!w && hit(w));
+    const types = Array.from(new Set(pets.map((p) => p.petType?.name).filter((t): t is string => !!t && t !== 'อื่นๆ')));
     const typeWord = (t: string) => (en ? this.i18n.t(t).toLowerCase() : t);
-    const female = en ? 'female' : 'ตัวเมีย';
-    const male = en ? 'male' : 'ตัวผู้';
-    // ผสมให้หลากหลาย: ประเภท 2 คำ → เพศ → ประเภท+เพศ → ประเภทที่เหลือ
-    const candidates: string[] = [
-      ...types.slice(0, 2).map(typeWord),
-      female,
-      male,
-      ...types.flatMap((t) => [`${typeWord(t)} ${female}`, `${typeWord(t)} ${male}`]),
-      ...types.slice(2).map(typeWord),
-    ];
-    const found = candidates.filter((w, i) => candidates.indexOf(w) === i && this.allPets.some((p) => matchesPet(p, w)));
-    return found.slice(0, 5);
+    const breeds = Array.from(new Set(pets.map((p) => (p.breed || '').trim()).filter((b) => b && b.length <= 20)));
+
+    const out: string[] = [];
+    const add = (w?: string) => {
+      if (w && !out.includes(w)) out.push(w);
+    };
+    add(types[0] && typeWord(types[0]));                                   // ประเภท
+    add(pick(en ? breeds.filter((b) => /^[\x00-\x7F]+$/.test(b)) : breeds)); // สายพันธุ์
+    if (!en) add(pick(PetListComponent.TRAITS));                            // นิสัย (มาจากคำอธิบาย)
+    add(pick(en ? ['female', 'male'] : ['ตัวเมีย', 'ตัวผู้']));             // เพศ
+    types.slice(1).forEach((t) => out.length < 5 && add(typeWord(t)));      // ประเภทอื่นเติมให้ครบ
+    return out.filter(hit).slice(0, 5);
   }
 
   // ปุ่มกรองประเภท: ดึงชื่อประเภทจริงจาก Backend (GET /api/pet-types)
