@@ -1,4 +1,5 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
+import { TPipe } from '../shared/t.pipe';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -8,7 +9,7 @@ import { DONATION_METHOD_TH, DonationMethod } from '../models/request.model';
 @Component({
   selector: 'app-donate',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TPipe],
   templateUrl: './donate.component.html',
 })
 export class DonateComponent {

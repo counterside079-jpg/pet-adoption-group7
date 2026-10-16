@@ -1,6 +1,21 @@
 import { PrismaClient } from '@prisma/client';
+import { randomBytes, scryptSync } from 'crypto';
 
 const prisma = new PrismaClient();
+
+// รูปแบบเดียวกับ AuthService.hashPassword (salt:hash แบบ scrypt)
+function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString('hex');
+  return `${salt}:${scryptSync(password, salt, 64).toString('hex')}`;
+}
+
+// บัญชีเริ่มต้น: เจ้าหน้าที่ 2 คน (แยกบัญชีกัน) + ผู้ใช้ทดสอบ 1 คน
+// มีอีเมลนี้อยู่แล้วจะไม่สร้างซ้ำและไม่เปลี่ยนรหัสผ่าน
+const SEED_USERS = [
+  { email: 'admin@banphakjai.com', password: 'admin1234', fullName: 'ผู้ดูแลระบบ (หลัก)', role: 'ADMIN' },
+  { email: 'staff@banphakjai.com', password: 'staff1234', fullName: 'เจ้าหน้าที่ศูนย์', role: 'ADMIN' },
+  { email: 'user@banphakjai.com', password: 'user1234', fullName: 'ผู้ใช้ทดสอบ', role: 'USER' },
+];
 
 async function main() {
   console.log('🌱 กำลังเริ่มต้นการบันทึกข้อมูลตัวอย่าง (Seeding)...');
@@ -98,6 +113,16 @@ async function main() {
     });
     console.log('✅ เพิ่มข้อมูลสัตว์เลี้ยงตัวอย่างสำเร็จ');
   }
+
+  // 3. บัญชีผู้ใช้เริ่มต้น
+  for (const u of SEED_USERS) {
+    await prisma.user.upsert({
+      where: { email: u.email },
+      update: {},
+      create: { email: u.email, fullName: u.fullName, role: u.role, passwordHash: hashPassword(u.password) },
+    });
+  }
+  console.log('✅ เพิ่มบัญชีเริ่มต้นสำเร็จ (admin@banphakjai.com / staff@banphakjai.com / user@banphakjai.com)');
 
   console.log('🎉 บันทึกข้อมูล Seed เสร็จสิ้นเรียบร้อย');
 }

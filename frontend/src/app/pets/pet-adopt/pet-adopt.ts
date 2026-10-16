@@ -1,24 +1,31 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { TPipe } from '../../shared/t.pipe';
 import { CommonModule } from '@angular/common';
+import { I18nService } from '../../services/i18n.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PetService } from '../../services/pet.service';
 import { RequestService, backendMessage } from '../../services/request.service';
 import { Pet } from '../../models/pet.model';
+import { AuthService } from '../../services/auth.service';
+import { petCover } from '../../services/pet-image';
 
 @Component({
   selector: 'app-pet-adopt',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, TPipe],
   templateUrl: './pet-adopt.html',
 })
 export class PetAdoptComponent implements OnInit {
+  readonly i18n = inject(I18nService);
   pet: Pet | null = null;
   adoptForm!: FormGroup;
   loadingPet = true;
   submitting = false;
+  cover = petCover;
 
   constructor(
+    public auth: AuthService,
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
@@ -29,6 +36,7 @@ export class PetAdoptComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.prefillFromAccount();
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadPet(id);
@@ -61,6 +69,20 @@ export class PetAdoptComponent implements OnInit {
     });
   }
 
+  // เติมชื่อ อีเมล เบอร์โทร จากบัญชีที่เข้าสู่ระบบให้อัตโนมัติ (แก้ไขได้)
+  private prefillFromAccount(): void {
+    const u = this.auth.user();
+    if (!u) return;
+    const parts = (u.fullName || '').trim().split(/\s+/);
+    this.adoptForm.patchValue({
+      firstName: parts[0] || '',
+      lastName: parts.slice(1).join(' '),
+      email: u.email,
+      confirmEmail: u.email,
+      phone: u.phone || '',
+    });
+  }
+
   loadPet(id: string): void {
     this.loadingPet = true;
     this.cdr.detectChanges();
@@ -80,17 +102,7 @@ export class PetAdoptComponent implements OnInit {
   }
 
   formatAge(months?: number | null): string {
-    if (!months || months <= 0) return 'ไม่ระบุอายุ';
-    const years = Math.floor(months / 12);
-    const remainingMonths = months % 12;
-
-    if (years > 0 && remainingMonths > 0) {
-      return `${years} ปี ${remainingMonths} เดือน`;
-    } else if (years > 0) {
-      return `${years} ปี`;
-    } else {
-      return `${remainingMonths} เดือน`;
-    }
+    return this.i18n.age(months);
   }
 
   getGenderThai(gender?: string): string {
@@ -100,7 +112,7 @@ export class PetAdoptComponent implements OnInit {
   }
 
   removeSelectedPet(): void {
-    if (confirm('ต้องการยกเลิกการเลือกสัตว์เลี้ยงตัวนี้และกลับไปหน้ารายการหรือไม่?')) {
+    if (confirm(this.i18n.t('ต้องการยกเลิกการเลือกสัตว์เลี้ยงตัวนี้และกลับไปหน้ารายการหรือไม่?'))) {
       this.router.navigate(['/']);
     }
   }
@@ -108,17 +120,17 @@ export class PetAdoptComponent implements OnInit {
   onSubmit(): void {
     if (this.adoptForm.invalid) {
       this.adoptForm.markAllAsTouched();
-      alert('กรุณากรอกข้อมูลในช่องที่มีเครื่องหมายดอกจัน (*) ให้ครบถ้วน');
+      alert(this.i18n.t('กรุณากรอกข้อมูลในช่องที่มีเครื่องหมายดอกจัน (*) ให้ครบถ้วน'));
       return;
     }
 
     if (this.adoptForm.value.email !== this.adoptForm.value.confirmEmail) {
-      alert('อีเมลและยืนยันอีเมลไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง');
+      alert(this.i18n.t('อีเมลและยืนยันอีเมลไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง'));
       return;
     }
 
     if (!this.pet) {
-      alert('ไม่พบข้อมูลสัตว์เลี้ยง กรุณาเลือกสัตว์เลี้ยงจากหน้ารายการอีกครั้ง');
+      alert(this.i18n.t('ไม่พบข้อมูลสัตว์เลี้ยง กรุณาเลือกสัตว์เลี้ยงจากหน้ารายการอีกครั้ง'));
       return;
     }
 
@@ -156,14 +168,14 @@ export class PetAdoptComponent implements OnInit {
         next: () => {
           this.submitting = false;
           this.cdr.detectChanges();
-          alert(`🎉 ส่งแบบฟอร์มขอรับเลี้ยง "${petName}" สำเร็จแล้ว!\nเจ้าหน้าที่จะติดต่อกลับหาคุณโดยเร็วที่สุด`);
-          // ถ้าติ๊กว่าสนใจข้อมูลการบริจาค พาไปหน้าบริจาคต่อ
-          this.router.navigate([v.agreeDonationInfo ? '/donate' : '/']);
+          alert(this.i18n.tr(`🎉 ส่งแบบฟอร์มขอรับเลี้ยง "${petName}" สำเร็จแล้ว!\nติดตามสถานะคำขอได้ที่เมนู "คำขอของฉัน"`, `🎉 Your adoption request for "${petName}" has been sent!\nTrack its status in "My requests".`));
+          // ถ้าติ๊กว่าสนใจข้อมูลการบริจาค พาไปหน้าบริจาคต่อ ไม่งั้นพาไปดูสถานะคำขอ
+          this.router.navigate([v.agreeDonationInfo ? '/donate' : '/my-requests']);
         },
         error: (err) => {
           this.submitting = false;
           this.cdr.detectChanges();
-          alert('ส่งแบบฟอร์มไม่สำเร็จ\n' + backendMessage(err, 'กรุณาลองใหม่อีกครั้ง'));
+          alert(this.i18n.t('ส่งแบบฟอร์มไม่สำเร็จ') + '\n' + this.i18n.t(backendMessage(err, 'กรุณาลองใหม่อีกครั้ง')));
         },
       });
   }

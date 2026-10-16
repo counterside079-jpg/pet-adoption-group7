@@ -30,15 +30,56 @@ model Pet {
   imageUrl    String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  // ลบแบบเก็บถาวร: มีค่า = ถูกลบออกจากหน้าเว็บแล้ว แต่ข้อมูลยังค้นย้อนหลังได้
+  deletedAt   DateTime?
   adoptionRequests AdoptionRequest[]
+  images      PetImage[]
+}
+
+// รูปสัตว์ (1 Pet มีได้หลายรูป) เก็บไฟล์รูปไว้ในฐานข้อมูล ย้ายเครื่องแล้วรูปไม่หาย
+model PetImage {
+  id        Int      @id @default(autoincrement())
+  petId     Int
+  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  data      Bytes
+  mimeType  String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+// ผู้ใช้งานระบบ: USER = ผู้สนใจรับเลี้ยง, ADMIN = เจ้าหน้าที่ (แต่ละคนมีบัญชีของตัวเอง)
+model User {
+  id               Int               @id @default(autoincrement())
+  email            String            @unique
+  passwordHash     String
+  fullName         String
+  phone            String?
+  role             String            @default("USER") // USER | ADMIN
+  createdAt        DateTime          @default(now())
+  adoptionRequests AdoptionRequest[]
+  activityLogs     ActivityLog[]
+}
+
+// ประวัติการทำงานของเจ้าหน้าที่: ใครทำอะไร กับข้อมูลไหน เมื่อไร
+model ActivityLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String   // CREATE | UPDATE | DELETE | RESTORE | STATUS | UPLOAD_IMAGE | DELETE_IMAGE
+  targetType String   // PET | ADOPTION_REQUEST | DONATION | USER
+  targetId   Int?
+  detail     String?
+  createdAt  DateTime @default(now())
 }
 
 // คำขอรับเลี้ยงที่ผู้ใช้กรอกจากหน้าแบบฟอร์ม (1 Pet มีได้หลายคำขอ)
-// ลบสัตว์แล้วคำขอของตัวนั้นถูกลบตาม (onDelete: Cascade)
+// คำขอรับเลี้ยง (ลบสัตว์ในระบบ = เก็บถาวร deletedAt จึงไม่ลบคำขอทิ้ง ประวัติยังอยู่)
 model AdoptionRequest {
   id                 Int      @id @default(autoincrement())
   petId              Int
   pet                Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  userId             Int?
+  user               User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   prefix             String?
   firstName          String
   lastName           String

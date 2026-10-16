@@ -4,17 +4,17 @@
 <div style="background: linear-gradient(135deg, #15803d 0%, #166534 100%); color: #ffffff; padding: 60px 24px 80px 24px; text-align: center;">
   <div style="max-width: 800px; margin: 0 auto;">
     <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.18); padding: 6px 18px; border-radius: 30px; font-size: 13px; font-weight: 500; margin-bottom: 20px; backdrop-filter: blur(4px);">
-      ⚙️ ระบบจัดการข้อมูลหลังบ้าน
+      {{ '⚙️ ระบบจัดการข้อมูลหลังบ้าน' | t }}
     </div>
     <h1 class="page-title" style="font-size: 36px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.5px;">
-      ระบบจัดการสัตว์เลี้ยง (Admin Dashboard)
+      {{ 'ระบบจัดการสัตว์เลี้ยง (Admin Dashboard)' | t }}
     </h1>
     <p style="font-size: 15px; color: #bbf7d0; margin: 0 0 32px 0;">
-      ควบคุมสถานะ บันทึกประวัติ และอัปเดตข้อมูลเพื่อนสี่ขาในความดูแลของศูนย์
+      {{ 'ควบคุมสถานะ บันทึกประวัติ และอัปเดตข้อมูลเพื่อนสี่ขาในความดูแลของศูนย์' | t }}
     </p>
 
-    <a routerLink="/admin/new" style="display: inline-flex; align-items: center; gap: 8px; background: #ffffff; color: #15803d; padding: 14px 32px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: 0.2s;">
-      <span>➕</span> เพิ่มสัตว์เลี้ยงใหม่
+    <a routerLink="/admin/new" style="display: inline-flex; align-items: center; gap: 8px; background: var(--bg-ffffff); color: var(--fg-15803d); padding: 14px 32px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: 0.2s;">
+      <span>➕</span> {{ 'เพิ่มสัตว์เลี้ยงใหม่' | t }}
     </a>
   </div>
 </div>
@@ -22,70 +22,95 @@
 <main style="max-width: 1200px; margin: -30px auto 80px auto; padding: 0 24px;">
 
   <!-- แถบ Filter เม็ดแคปซูล (สไตล์เดียวกับ Vercel) -->
-  <div style="background: #ffffff; border-radius: 20px; padding: 16px 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 10px; overflow-x: auto; margin-bottom: 32px;">
-    <button (click)="setFilter('ALL')" [style.background]="selectedFilter === 'ALL' ? '#0f172a' : '#f8fafc'" [style.color]="selectedFilter === 'ALL' ? '#ffffff' : '#475569'" style="padding: 10px 24px; border-radius: 30px; border: 1px solid #e2e8f0; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;">
-      ทั้งหมด ({{ pets.length }})
+  <div style="background: var(--bg-ffffff); border-radius: 20px; padding: 16px 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 10px; overflow-x: auto; margin-bottom: 32px;">
+    <button (click)="setFilter('ALL')" [style.background]="selectedFilter === 'ALL' ? 'var(--bg-0f172a)' : 'var(--bg-f8fafc)'" [style.color]="selectedFilter === 'ALL' ? '#ffffff' : 'var(--fg-475569)'" style="padding: 10px 24px; border-radius: 30px; border: 1px solid var(--bd-e2e8f0); font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+      {{ 'ทั้งหมด (' | t }}{{ activePets.length }})
     </button>
-    <button (click)="setFilter('AVAILABLE')" [style.background]="selectedFilter === 'AVAILABLE' ? '#0f172a' : '#f8fafc'" [style.color]="selectedFilter === 'AVAILABLE' ? '#ffffff' : '#475569'" style="padding: 10px 24px; border-radius: 30px; border: 1px solid #e2e8f0; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;">
-      พร้อมรับเลี้ยง ({{ getCountByStatus('AVAILABLE') }})
+    <button (click)="setFilter('AVAILABLE')" [style.background]="selectedFilter === 'AVAILABLE' ? 'var(--bg-0f172a)' : 'var(--bg-f8fafc)'" [style.color]="selectedFilter === 'AVAILABLE' ? '#ffffff' : 'var(--fg-475569)'" style="padding: 10px 24px; border-radius: 30px; border: 1px solid var(--bd-e2e8f0); font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+      {{ 'พร้อมรับเลี้ยง (' | t }}{{ (getCountByStatus('AVAILABLE')) | t }})
     </button>
-    <button (click)="setFilter('PENDING')" [style.background]="selectedFilter === 'PENDING' ? '#0f172a' : '#f8fafc'" [style.color]="selectedFilter === 'PENDING' ? '#ffffff' : '#475569'" style="padding: 10px 24px; border-radius: 30px; border: 1px solid #e2e8f0; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;">
-      กำลังรอพิจารณา ({{ getCountByStatus('PENDING') }})
+    <button (click)="setFilter('PENDING')" [style.background]="selectedFilter === 'PENDING' ? 'var(--bg-0f172a)' : 'var(--bg-f8fafc)'" [style.color]="selectedFilter === 'PENDING' ? '#ffffff' : 'var(--fg-475569)'" style="padding: 10px 24px; border-radius: 30px; border: 1px solid var(--bd-e2e8f0); font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+      {{ 'กำลังรอพิจารณา (' | t }}{{ (getCountByStatus('PENDING')) | t }})
     </button>
-    <button (click)="setFilter('ADOPTED')" [style.background]="selectedFilter === 'ADOPTED' ? '#0f172a' : '#f8fafc'" [style.color]="selectedFilter === 'ADOPTED' ? '#ffffff' : '#475569'" style="padding: 10px 24px; border-radius: 30px; border: 1px solid #e2e8f0; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;">
-      มีบ้านแล้ว ({{ getCountByStatus('ADOPTED') }})
+    <button (click)="setFilter('ADOPTED')" [style.background]="selectedFilter === 'ADOPTED' ? 'var(--bg-0f172a)' : 'var(--bg-f8fafc)'" [style.color]="selectedFilter === 'ADOPTED' ? '#ffffff' : 'var(--fg-475569)'" style="padding: 10px 24px; border-radius: 30px; border: 1px solid var(--bd-e2e8f0); font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+      {{ 'มีบ้านแล้ว (' | t }}{{ (getCountByStatus('ADOPTED')) | t }})
     </button>
-    <button (click)="setFilter('UNAVAILABLE')" [style.background]="selectedFilter === 'UNAVAILABLE' ? '#0f172a' : '#f8fafc'" [style.color]="selectedFilter === 'UNAVAILABLE' ? '#ffffff' : '#475569'" style="padding: 10px 24px; border-radius: 30px; border: 1px solid #e2e8f0; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;">
-      ไม่พร้อมรับเลี้ยง ({{ getCountByStatus('UNAVAILABLE') }})
+    <button (click)="setFilter('UNAVAILABLE')" [style.background]="selectedFilter === 'UNAVAILABLE' ? 'var(--bg-0f172a)' : 'var(--bg-f8fafc)'" [style.color]="selectedFilter === 'UNAVAILABLE' ? '#ffffff' : 'var(--fg-475569)'" style="padding: 10px 24px; border-radius: 30px; border: 1px solid var(--bd-e2e8f0); font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+      {{ 'ไม่พร้อมรับเลี้ยง (' | t }}{{ (getCountByStatus('UNAVAILABLE')) | t }})
+    </button>
+    <button (click)="setFilter('ARCHIVED')" [style.background]="selectedFilter === 'ARCHIVED' ? '#7f1d1d' : 'var(--bg-fef2f2)'" [style.color]="selectedFilter === 'ARCHIVED' ? '#ffffff' : 'var(--fg-b91c1c)'" style="padding: 10px 24px; border-radius: 30px; border: 1px solid var(--bd-fecaca); font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+      {{ '🗄️ เก็บถาวร/ลบแล้ว (' | t }}{{ archivedPets.length }})
     </button>
   </div>
 
-  <!-- Loading & Error -->
-  <div *ngIf="loading" style="background: #ffffff; border-radius: 20px; padding: 80px 20px; text-align: center; color: #64748b; font-size: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
-    <div style="font-size: 36px; margin-bottom: 12px;">⏳</div>
-    <div>กำลังโหลดข้อมูลสัตว์เลี้ยง...</div>
+  <!-- ค้นหาในหลังบ้าน (รวมตัวที่มีบ้านแล้ว/ไม่พร้อม/ลบแล้ว ตามแท็บที่เลือก) -->
+  <div style="margin: -16px 0 28px 0;">
+    <input type="search" [(ngModel)]="searchKeyword" [placeholder]="'🔍 ค้นหาจากรหัส (#12) ชื่อ สายพันธุ์ ประเภท เพศ หรือคำอธิบาย' | t"
+      style="width: 100%; padding: 12px 20px; border-radius: 999px; border: 1px solid var(--bd-cbd5e1); font-size: 14px; font-family: inherit; background: var(--bg-ffffff);" />
+    <div style="font-size: 12.5px; color: var(--fg-64748b); margin-top: 6px; padding-left: 12px;">
+      {{ 'แสดง' | t }} {{ filteredPets.length }} {{ 'รายการ · สัตว์ที่มีบ้านแล้วหรือถูกลบ จะไม่แสดงหน้าเว็บผู้ใช้ แต่ยังค้นและดูประวัติย้อนหลังได้ที่นี่' | t }}
+    </div>
   </div>
-  <div *ngIf="!loading && errorMessage" style="background: #fef2f2; border: 1.5px solid #f87171; border-radius: 20px; padding: 32px; text-align: center; margin-bottom: 24px;">
+
+  <!-- Loading & Error -->
+  <div *ngIf="loading" style="background: var(--bg-ffffff); border-radius: 20px; padding: 80px 20px; text-align: center; color: var(--fg-64748b); font-size: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+    <div style="font-size: 36px; margin-bottom: 12px;">⏳</div>
+    <div>{{ 'กำลังโหลดข้อมูลสัตว์เลี้ยง...' | t }}</div>
+  </div>
+  <div *ngIf="!loading && errorMessage" style="background: var(--bg-fef2f2); border: 1.5px solid var(--bd-f87171); border-radius: 20px; padding: 32px; text-align: center; margin-bottom: 24px;">
     <div style="font-size: 36px; margin-bottom: 8px;">⚠️</div>
-    <h3 style="color: #991b1b; margin: 0 0 6px 0;">เกิดข้อผิดพลาดในการโหลดข้อมูล</h3>
-    <p style="color: #b91c1c;">{{ errorMessage }}</p>
+    <h3 style="color: var(--fg-991b1b); margin: 0 0 6px 0;">{{ 'เกิดข้อผิดพลาดในการโหลดข้อมูล' | t }}</h3>
+    <p style="color: var(--fg-b91c1c);">{{ (errorMessage) | t }}</p>
   </div>
 
   <!-- รูปแบบการ์ด 100% เหมือนหน้าแรก (แต่เปลี่ยนปุ่มด้านล่างเป็นการจัดการ) -->
   <div *ngIf="!loading && !errorMessage" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
-    <div *ngFor="let pet of filteredPets" style="background: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
+    <div *ngFor="let pet of filteredPets" style="background: var(--bg-ffffff); border-radius: 24px; overflow: hidden; border: 1px solid var(--bd-e2e8f0); box-shadow: 0 10px 25px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
       
       <!-- รูปภาพสัตว์เลี้ยง -->
-      <div style="height: 220px; width: 100%; position: relative; background: #f1f5f9; overflow: hidden;">
-        <img [src]="pet.imageUrl || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&q=80'" style="width: 100%; height: 100%; object-fit: cover;" />
+      <div style="height: 220px; width: 100%; position: relative; background: var(--bg-f1f5f9); overflow: hidden;">
+        <img [src]="cover(pet)" [alt]="pet.name" style="width: 100%; height: 100%; object-fit: cover;" [style.filter]="pet.deletedAt ? 'grayscale(1)' : 'none'" />
+        <div *ngIf="pet.deletedAt" style="position: absolute; top: 16px; left: 16px; background: #7f1d1d; color: #fff; padding: 5px 12px; border-radius: 30px; font-size: 12px; font-weight: 700;">
+          {{ '🗄️ ลบเมื่อ' | t }} {{ pet.deletedAt | tdate: 'd MMM y' }}
+        </div>
         
         <!-- ป้ายสถานะทับบนรูป -->
-        <div style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); padding: 6px 16px; border-radius: 30px; font-size: 12px; font-weight: 800;"
-          [style.color]="pet.status === 'AVAILABLE' ? '#15803d' : (pet.status === 'PENDING' ? '#854d0e' : (pet.status === 'ADOPTED' ? '#475569' : '#b91c1c'))"
+        <div style="position: absolute; top: 16px; right: 16px; background: var(--overlay); backdrop-filter: blur(4px); padding: 6px 16px; border-radius: 30px; font-size: 12px; font-weight: 800;"
+          [style.color]="pet.status === 'AVAILABLE' ? 'var(--fg-15803d)' : (pet.status === 'PENDING' ? 'var(--fg-854d0e)' : (pet.status === 'ADOPTED' ? 'var(--fg-475569)' : 'var(--fg-b91c1c)'))"
           [style.boxShadow]="'0 4px 12px rgba(0,0,0,0.1)'">
-          {{ getStatusThai(pet.status) }}
+          {{ (getStatusThai(pet.status)) | t }}
         </div>
       </div>
 
       <!-- รายละเอียดสัตว์เลี้ยง -->
       <div style="padding: 24px; display: flex; flex-direction: column; flex-grow: 1;">
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
-          <h3 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0;">{{ pet.name }}</h3>
-          <span style="font-size: 14px; color: #64748b; font-weight: 600;">{{ pet.ageMonths ? pet.ageMonths + ' เดือน' : '-' }}</span>
+          <h3 style="font-size: 20px; font-weight: 800; color: var(--fg-0f172a); margin: 0;">{{ (pet.name) | t }} <span style="font-size: 13px; color: var(--fg-94a3b8); font-weight: 600;">#{{ (pet.id) | t }}</span></h3>
+          <span style="font-size: 14px; color: var(--fg-64748b); font-weight: 600;">{{ i18n.age(pet.ageMonths) }}</span>
         </div>
 
         <div style="display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;">
-          <span style="background: #f1f5f9; color: #475569; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">เพศ{{ getGenderThai(pet.gender) }}</span>
-          <span style="background: #f1f5f9; color: #475569; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">{{ pet.petType?.name || 'ไม่ระบุ' }}</span>
+          <span style="background: var(--bg-f1f5f9); color: var(--fg-475569); padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">{{ 'เพศ' | t }}{{ (getGenderThai(pet.gender)) | t }}</span>
+          <span style="background: var(--bg-f1f5f9); color: var(--fg-475569); padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">{{ (pet.petType?.name || 'ไม่ระบุ') | t }}</span>
         </div>
 
-        <!-- ปุ่มจัดการ (แก้ไข / ลบ) -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: auto;">
-          <a [routerLink]="['/admin', pet.id, 'edit']" style="text-align: center; background: #f0fdf4; color: #15803d; border: 1.5px solid #bbf7d0; padding: 12px 0; border-radius: 16px; text-decoration: none; font-weight: 700; font-size: 14px; transition: 0.2s;">
-            ✏️ แก้ไข
-          </a>
-          <button (click)="onDelete(pet.id, pet.name)" style="background: #fef2f2; color: #dc2626; border: 1.5px solid #fecaca; padding: 12px 0; border-radius: 16px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s;">
-            🗑️ ลบ
+        <!-- ปุ่มจัดการ (แก้ไข / ลบ / กู้คืน / ประวัติ) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: auto;">
+          <ng-container *ngIf="!pet.deletedAt; else archivedBtns">
+            <a [routerLink]="['/admin', pet.id, 'edit']" style="text-align: center; background: var(--bg-f0fdf4); color: var(--fg-15803d); border: 1.5px solid var(--bd-bbf7d0); padding: 11px 0; border-radius: 14px; text-decoration: none; font-weight: 700; font-size: 13.5px;">
+              {{ '✏️ แก้ไข' | t }}
+            </a>
+            <button (click)="onDelete(pet.id, pet.name)" style="background: var(--bg-fef2f2); color: var(--fg-dc2626); border: 1.5px solid var(--bd-fecaca); padding: 11px 0; border-radius: 14px; font-weight: 700; font-size: 13.5px; cursor: pointer; font-family: inherit;">
+              {{ '🗑️ ลบ' | t }}
+            </button>
+          </ng-container>
+          <ng-template #archivedBtns>
+            <button (click)="onRestore(pet)" style="grid-column: span 2; background: var(--bg-eff6ff); color: var(--fg-1d4ed8); border: 1.5px solid var(--bd-bfdbfe); padding: 11px 0; border-radius: 14px; font-weight: 700; font-size: 13.5px; cursor: pointer; font-family: inherit;">
+              {{ '♻️ กู้คืน' | t }}
+            </button>
+          </ng-template>
+          <button (click)="openHistory(pet)" style="background: var(--bg-f8fafc); color: var(--fg-334155); border: 1.5px solid var(--bd-e2e8f0); padding: 11px 0; border-radius: 14px; font-weight: 700; font-size: 13.5px; cursor: pointer; font-family: inherit;">
+            {{ '🕘 ประวัติ' | t }}
           </button>
         </div>
       </div>
@@ -93,8 +118,42 @@
     </div>
   </div>
 
-  <div *ngIf="!loading && !errorMessage && filteredPets.length === 0" style="background: #ffffff; border-radius: 20px; padding: 60px 20px; text-align: center; color: #94a3b8; border: 1px solid #e2e8f0;">
+  <div *ngIf="!loading && !errorMessage && filteredPets.length === 0" style="background: var(--bg-ffffff); border-radius: 20px; padding: 60px 20px; text-align: center; color: var(--fg-94a3b8); border: 1px solid var(--bd-e2e8f0);">
     <div style="font-size: 40px; margin-bottom: 10px;">🐾</div>
-    <div style="font-size: 16px; font-weight: 700; color: #475569;">ไม่พบข้อมูลสัตว์เลี้ยงในหมวดหมู่นี้</div>
+    <div style="font-size: 16px; font-weight: 700; color: var(--fg-475569);">{{ 'ไม่พบข้อมูลสัตว์เลี้ยงในหมวดหมู่นี้' | t }}</div>
   </div>
 </main>
+
+<!-- หน้าต่างประวัติย้อนหลังของสัตว์ 1 ตัว: คำขอรับเลี้ยงทั้งหมด + ใครทำอะไรเมื่อไร -->
+<div *ngIf="historyPet" (click)="closeHistory()" style="position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 100; display: flex; align-items: flex-start; justify-content: center; padding: 40px 12px; overflow-y: auto;">
+  <div (click)="$event.stopPropagation()" style="background: var(--bg-ffffff); border-radius: 20px; width: 100%; max-width: 720px; padding: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px;">
+      <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: var(--fg-0f172a);">{{ '🕘 ประวัติของ' | t }} {{ (historyPet.name) | t }} <span style="color: var(--fg-94a3b8); font-size: 14px;">#{{ (historyPet.id) | t }}</span></h2>
+      <button type="button" (click)="closeHistory()" style="border: none; background: var(--bg-f1f5f9); width: 34px; height: 34px; border-radius: 50%; font-size: 18px; cursor: pointer;">×</button>
+    </div>
+
+    <div *ngIf="historyLoading" style="text-align: center; color: var(--fg-64748b); padding: 30px 0;">{{ 'กำลังโหลด...' | t }}</div>
+    <div *ngIf="historyError" style="color: var(--fg-b91c1c); background: var(--bg-fef2f2); padding: 12px; border-radius: 10px;">⚠️ {{ (historyError) | t }}</div>
+
+    <ng-container *ngIf="!historyLoading && !historyError">
+      <h3 style="font-size: 16px; margin: 0 0 8px; color: var(--fg-334155);">{{ '📋 คำขอรับเลี้ยง (' | t }}{{ historyRequests.length }})</h3>
+      <div *ngIf="!historyRequests.length" style="color: var(--fg-94a3b8); font-size: 14px; margin-bottom: 16px;">{{ 'ยังไม่มีคำขอ' | t }}</div>
+      <div *ngFor="let r of historyRequests" style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; border: 1px solid var(--bd-e2e8f0); border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; font-size: 14px;">
+        <div>
+          <b>#{{ (r.id) | t }} {{ (r.firstName) | t }} {{ (r.lastName) | t }}</b>
+          <span style="color: var(--fg-64748b);"> · {{ (r.email) | t }} · {{ (r.phone) | t }}</span>
+          <div style="color: var(--fg-94a3b8); font-size: 12.5px;">{{ 'ส่งเมื่อ' | t }} {{ r.createdAt | tdate: 'd MMM y HH:mm' }}<span *ngIf="r.user"> {{ '· บัญชี' | t }} {{ (r.user.email) | t }}</span></div>
+        </div>
+        <span style="font-weight: 700;" [style.color]="r.status === 'APPROVED' ? 'var(--fg-15803d)' : (r.status === 'REJECTED' ? 'var(--fg-b91c1c)' : 'var(--fg-b45309)')">{{ (requestStatusTh[r.status]) | t }}</span>
+      </div>
+
+      <h3 style="font-size: 16px; margin: 20px 0 8px; color: var(--fg-334155);">{{ '🛠️ บันทึกการทำงานของเจ้าหน้าที่ (' | t }}{{ historyLogs.length }})</h3>
+      <div *ngIf="!historyLogs.length" style="color: var(--fg-94a3b8); font-size: 14px;">{{ 'ยังไม่มีบันทึก (ข้อมูลที่สร้างก่อนเปิดระบบบันทึกจะไม่มีประวัติ)' | t }}</div>
+      <div *ngFor="let l of historyLogs" style="border-left: 3px solid var(--bd-86efac); padding: 6px 12px; margin-bottom: 8px; font-size: 14px;">
+        <div><b>{{ (actionTh[l.action] || l.action) | t }}</b> — {{ (l.detail) | t }}</div>
+        <div style="color: var(--fg-94a3b8); font-size: 12.5px;">{{ l.createdAt | tdate: 'd MMM y HH:mm:ss' }} {{ '· โดย' | t }} {{ (l.user?.fullName || 'ไม่ทราบ (บัญชีถูกลบ)') | t }} {{ (l.user ? '(' + l.user.email + ')' : '') | t }}</div>
+      </div>
+      <a [routerLink]="['/admin/logs']" [queryParams]="{ targetType: 'PET', targetId: historyPet.id }" style="display: inline-block; margin-top: 10px; font-size: 13px; color: var(--fg-15803d);">{{ 'ดูในหน้าประวัติการทำงานทั้งหมด →' | t }}</a>
+    </ng-container>
+  </div>
+</div>

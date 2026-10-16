@@ -1,0 +1,44 @@
+<div style="min-height: 70vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px;">
+  <div style="width: 100%; max-width: 440px; background: var(--bg-ffffff); border-radius: 20px; padding: 32px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+    <div style="text-align: center;">
+      <div style="font-size: 40px; margin-bottom: 6px;">🏡</div>
+      <h1 style="font-size: 24px; font-weight: 800; color: var(--fg-15803d); margin: 0 0 6px 0;">{{ 'สมัครสมาชิก' | t }}</h1>
+      <p style="font-size: 14px; color: var(--fg-64748b); margin: 0 0 20px 0;">{{ 'สมัครเพื่อส่งคำขอรับเลี้ยงและติดตามสถานะคำขอได้ตลอด' | t }}</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 8px;">
+      <label style="font-size: 14px; font-weight: 600; color: var(--fg-334155);">{{ 'ชื่อ-นามสกุล *' | t }}</label>
+      <input name="fullName" [(ngModel)]="fullName" (input)="errorMessage = ''" autocomplete="name"
+        style="padding: 11px 14px; border-radius: 12px; border: 1.5px solid var(--bd-cbd5e1); font-size: 15px; width: 100%;" />
+
+      <label style="font-size: 14px; font-weight: 600; color: var(--fg-334155); margin-top: 4px;">{{ 'อีเมล *' | t }} <span style="font-weight: 400; color: var(--fg-94a3b8);">{{ '(ใช้เข้าสู่ระบบ)' | t }}</span></label>
+      <input name="email" type="email" [(ngModel)]="email" (input)="errorMessage = ''" autocomplete="email"
+        style="padding: 11px 14px; border-radius: 12px; border: 1.5px solid var(--bd-cbd5e1); font-size: 15px; width: 100%;" />
+
+      <label style="font-size: 14px; font-weight: 600; color: var(--fg-334155); margin-top: 4px;">{{ 'เบอร์โทรศัพท์' | t }}</label>
+      <input name="phone" [(ngModel)]="phone" (input)="errorMessage = ''" autocomplete="tel" placeholder="0812345678"
+        style="padding: 11px 14px; border-radius: 12px; border: 1.5px solid var(--bd-cbd5e1); font-size: 15px; width: 100%;" />
+
+      <label style="font-size: 14px; font-weight: 600; color: var(--fg-334155); margin-top: 4px;">{{ 'รหัสผ่าน *' | t }} <span style="font-weight: 400; color: var(--fg-94a3b8);">{{ '(อย่างน้อย 6 ตัว)' | t }}</span></label>
+      <input name="password" type="password" [(ngModel)]="password" (input)="errorMessage = ''" autocomplete="new-password"
+        style="padding: 11px 14px; border-radius: 12px; border: 1.5px solid var(--bd-cbd5e1); font-size: 15px; width: 100%;" />
+
+      <label style="font-size: 14px; font-weight: 600; color: var(--fg-334155); margin-top: 4px;">{{ 'ยืนยันรหัสผ่าน *' | t }}</label>
+      <input name="confirm" type="password" [(ngModel)]="confirm" (input)="errorMessage = ''" autocomplete="new-password"
+        style="padding: 11px 14px; border-radius: 12px; border: 1.5px solid var(--bd-cbd5e1); font-size: 15px; width: 100%;" />
+
+      <div *ngIf="errorMessage" style="color: var(--fg-dc2626); font-size: 13px; font-weight: 600; white-space: pre-line;">⚠️ {{ (errorMessage) | t }}</div>
+
+      <button type="submit" [disabled]="loading"
+        style="margin-top: 10px; background: #15803d; color: #ffffff; border: none; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;"
+        [style.opacity]="loading ? 0.6 : 1">
+        {{ (loading ? 'กำลังสมัคร...' : 'สมัครสมาชิก') | t }}
+      </button>
+    </form>
+
+    <p style="font-size: 14px; color: var(--fg-475569); margin: 18px 0 0 0; text-align: center;">
+      {{ 'มีบัญชีแล้ว?' | t }}
+      <a routerLink="/login" [queryParams]="returnUrl ? { returnUrl: returnUrl } : {}" style="color: var(--fg-15803d); font-weight: 700;">{{ 'เข้าสู่ระบบ' | t }}</a>
+    </p>
+  </div>
+</div>

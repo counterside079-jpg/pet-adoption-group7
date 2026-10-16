@@ -1,5 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { TPipe } from '../../shared/t.pipe';
 import { CommonModule } from '@angular/common';
+import { I18nService } from '../../services/i18n.service';
 import {
   FormBuilder,
   FormGroup,
@@ -11,7 +13,8 @@ import {
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PetService } from '../../services/pet.service';
-import { PetType } from '../../models/pet.model';
+import { PetImageRef, PetType } from '../../models/pet.model';
+import { petImageUrl } from '../../services/pet-image';
 
 export function noWhitespaceValidator(control: AbstractControl): ValidationErrors | null {
   const isWhitespace = (control.value || '').toString().trim().length === 0;
@@ -21,10 +24,11 @@ export function noWhitespaceValidator(control: AbstractControl): ValidationError
 @Component({
   selector: 'app-pet-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, TPipe],
   templateUrl: './pet-form.html',
 })
 export class PetFormComponent implements OnInit {
+  readonly i18n = inject(I18nService);
   petForm!: FormGroup;
   isEditMode: boolean = false;
   petId: number | null = null;
@@ -33,6 +37,14 @@ export class PetFormComponent implements OnInit {
 
   loading: boolean = false;
   backendError: string = '';
+
+  // ---------- รูปภาพหลายรูป ----------
+  readonly MAX_IMAGES = 10;
+  readonly MAX_SIZE_MB = 3;
+  existingImages: PetImageRef[] = [];      // รูปที่อัปโหลดไว้แล้ว (โหมดแก้ไข)
+  newFiles: { file: File; preview: string }[] = []; // รูปที่เลือกใหม่ รอส่งตอนกดบันทึก
+  imageError = '';
+  imageUrlOf = petImageUrl;
 
   constructor(
     private fb: FormBuilder,
@@ -115,6 +127,7 @@ export class PetFormComponent implements OnInit {
           description: data.description || '',
           imageUrl: data.imageUrl || '',
         });
+        this.existingImages = data.images || [];
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -139,7 +152,7 @@ export class PetFormComponent implements OnInit {
 
     if (this.isEditMode && this.originalStatus === 'ADOPTED' && currentStatus === 'AVAILABLE') {
       const isConfirmed = confirm(
-        '⚠️ สัตว์เลี้ยงตัวนี้มีสถานะ "รับเลี้ยงแล้ว (ADOPTED)"\nคุณต้องการเปิดรับเลี้ยงใหม่อีกครั้ง (AVAILABLE) ใช่หรือไม่?'
+        this.i18n.t('⚠️ สัตว์เลี้ยงตัวนี้มีสถานะ "รับเลี้ยงแล้ว (ADOPTED)"\nคุณต้องการเปิดรับเลี้ยงใหม่อีกครั้ง (AVAILABLE) ใช่หรือไม่?')
       );
       if (!isConfirmed) return;
       confirmReopen = true;
@@ -177,10 +190,7 @@ export class PetFormComponent implements OnInit {
       this.petService.update(this.petId, formData).subscribe({
         next: () => {
           clearTimeout(safetyTimeout);
-          this.loading = false;
-          this.cdr.detectChanges();
-          alert('บันทึกการแก้ไขข้อมูลสำเร็จ');
-          this.router.navigate(['/admin']);
+          this.afterSave(this.petId!, 'บันทึกการแก้ไขข้อมูลสำเร็จ');
         },
         error: (err: HttpErrorResponse) => {
           clearTimeout(safetyTimeout);
@@ -191,12 +201,9 @@ export class PetFormComponent implements OnInit {
       });
     } else {
       this.petService.create(formData).subscribe({
-        next: () => {
+        next: (pet) => {
           clearTimeout(safetyTimeout);
-          this.loading = false;
-          this.cdr.detectChanges();
-          alert('เพิ่มสัตว์เลี้ยงใหม่สำเร็จ');
-          this.router.navigate(['/admin']);
+          this.afterSave(pet.id, 'เพิ่มสัตว์เลี้ยงใหม่สำเร็จ');
         },
         error: (err: HttpErrorResponse) => {
           clearTimeout(safetyTimeout);
@@ -208,16 +215,91 @@ export class PetFormComponent implements OnInit {
     }
   }
 
+  // เลือกรูปจากเครื่อง (เลือกได้ทีละหลายรูป)
+  onFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files || []);
+    input.value = '';
+    this.imageError = '';
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) {
+        this.imageError = this.i18n.tr(`"${file.name}" ไม่ใช่ไฟล์รูปภาพ`, `"${file.name}" is not an image file`);
+        continue;
+      }
+      if (file.size > this.MAX_SIZE_MB * 1024 * 1024) {
+        this.imageError = this.i18n.tr(`"${file.name}" ใหญ่เกิน ${this.MAX_SIZE_MB}MB`, `"${file.name}" is larger than ${this.MAX_SIZE_MB}MB`);
+        continue;
+      }
+      if (this.existingImages.length + this.newFiles.length >= this.MAX_IMAGES) {
+        this.imageError = this.i18n.tr(`สัตว์ 1 ตัวมีรูปได้ไม่เกิน ${this.MAX_IMAGES} รูป`, `A pet can have at most ${this.MAX_IMAGES} photos`);
+        break;
+      }
+      this.newFiles.push({ file, preview: URL.createObjectURL(file) });
+    }
+    this.cdr.detectChanges();
+  }
+
+  removeNewFile(i: number): void {
+    URL.revokeObjectURL(this.newFiles[i].preview);
+    this.newFiles.splice(i, 1);
+  }
+
+  // ลบรูปที่อัปโหลดไว้แล้ว (ลบทันที และถูกบันทึกในประวัติการทำงาน)
+  deleteExistingImage(img: PetImageRef): void {
+    if (!confirm(this.i18n.t('ลบรูปนี้ใช่หรือไม่?'))) return;
+    this.petService.deleteImage(img.id).subscribe({
+      next: () => {
+        this.existingImages = this.existingImages.filter((x) => x.id !== img.id);
+        this.cdr.detectChanges();
+      },
+      error: (err: HttpErrorResponse) => {
+        this.handleBackendError(err);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  // หลังบันทึกข้อมูลสำเร็จ: ถ้ามีรูปใหม่ ส่งรูปขึ้นต่อ แล้วค่อยกลับหน้า Admin
+  private afterSave(petId: number, message: string): void {
+    const done = (msg: string) => {
+      this.loading = false;
+      this.cdr.detectChanges();
+      alert(this.i18n.t(msg));
+      this.router.navigate(['/admin']);
+    };
+    if (!this.newFiles.length) {
+      done(message);
+      return;
+    }
+    this.petService.uploadImages(petId, this.newFiles.map((f) => f.file)).subscribe({
+      next: () => {
+        this.newFiles.forEach((f) => URL.revokeObjectURL(f.preview));
+        this.newFiles = [];
+        done(this.i18n.t(message) + this.i18n.tr(' (อัปโหลดรูปเรียบร้อย)', ' (photos uploaded)'));
+      },
+      error: (err: HttpErrorResponse) => {
+        // ข้อมูลบันทึกแล้ว แต่รูปขึ้นไม่สำเร็จ -> อยู่หน้าเดิม (โหมดแก้ไข) ให้ลองส่งรูปใหม่
+        this.handleBackendError(err);
+        this.backendError = this.i18n.tr('บันทึกข้อมูลแล้ว แต่อัปโหลดรูปไม่สำเร็จ: ', 'Saved, but the photo upload failed: ') + this.i18n.t(this.backendError);
+        this.loading = false;
+        if (!this.isEditMode) {
+          this.router.navigate(['/admin', petId, 'edit']);
+        }
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
   private handleBackendError(err: HttpErrorResponse): void {
     if (err.error) {
       if (Array.isArray(err.error.message)) {
-        this.backendError = err.error.message.join(' | ');
+        this.backendError = err.error.message.map((m: string) => this.i18n.t(m)).join(' | ');
       } else if (typeof err.error.message === 'string') {
         this.backendError = err.error.message;
       } else if (typeof err.error === 'string') {
         this.backendError = err.error;
       } else {
-        this.backendError = `เกิดข้อผิดพลาดจาก Backend (Status: ${err.status})`;
+        this.backendError = this.i18n.tr(`เกิดข้อผิดพลาดจาก Backend (Status: ${err.status})`, `Backend error (Status: ${err.status})`);
       }
     } else {
       this.backendError = 'ไม่สามารถเชื่อมต่อกับ Backend ได้';

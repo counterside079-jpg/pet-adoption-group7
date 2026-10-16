@@ -1,35 +1,45 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { TPipe, TDatePipe } from '../../shared/t.pipe';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
-import { AdminAuthService } from '../admin-auth.service';
+import { I18nService } from '../../services/i18n.service';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { AdminNavComponent } from '../admin-nav/admin-nav.component';
 import { PetService } from '../../services/pet.service';
-import { Pet } from '../../models/pet.model';
+import { ActivityLog, LOG_ACTION_TH, Pet } from '../../models/pet.model';
+import { AdoptionRequest, REQUEST_STATUS_TH } from '../../models/request.model';
+import { matchesPet } from '../../services/pet-search';
+import { petCover } from '../../services/pet-image';
+import { backendMessage } from '../../services/request.service';
 
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, AdminNavComponent],
+  imports: [CommonModule, FormsModule, RouterLink, AdminNavComponent, TPipe, TDatePipe],
   templateUrl: './admin-page.component.html',
 })
 export class AdminPageComponent implements OnInit {
+  readonly i18n = inject(I18nService);
   pets: Pet[] = [];
   loading = true;
   errorMessage = '';
-  selectedFilter: string = 'ALL';
+  selectedFilter: string = 'ALL'; // ALL = ทุกสถานะ (ไม่รวมที่เก็บถาวร), ARCHIVED = เฉพาะที่ลบแล้ว
+  searchKeyword = '';
+  cover = petCover;
+
+  // หน้าต่างประวัติย้อนหลังของสัตว์ 1 ตัว
+  historyPet: Pet | null = null;
+  historyRequests: AdoptionRequest[] = [];
+  historyLogs: ActivityLog[] = [];
+  historyLoading = false;
+  historyError = '';
+  requestStatusTh = REQUEST_STATUS_TH;
+  actionTh = LOG_ACTION_TH;
 
   constructor(
     private petService: PetService,
     private cdr: ChangeDetectorRef, // 👈 ยาแรง: ตัวบังคับรีเฟรชหน้าจอ
-    private auth: AdminAuthService,
-    private router: Router,
   ) {}
-
-  // ออกจากระบบเจ้าหน้าที่ แล้วกลับหน้าหลัก
-  onLogout(): void {
-    this.auth.logout();
-    this.router.navigateByUrl('/');
-  }
 
   ngOnInit(): void {
     this.fetchPets();
@@ -40,7 +50,8 @@ export class AdminPageComponent implements OnInit {
     this.errorMessage = '';
     this.cdr.detectChanges(); // บังคับโชว์หน้าโหลด
 
-    this.petService.getAll(undefined, undefined, 'ALL').subscribe({
+    // โหลดทุกสถานะ รวมตัวที่ลบแล้ว (เก็บถาวร) เพื่อให้ค้นย้อนหลังได้
+    this.petService.getAll(undefined, undefined, 'ALL', 'include').subscribe({
       next: (data: any) => {
         this.loading = false;
         
@@ -59,11 +70,23 @@ export class AdminPageComponent implements OnInit {
   }
 
   // ตัวกรองสัตว์เลี้ยงตามแท็บที่กดเลือก
+  get activePets(): Pet[] {
+    return this.pets.filter((p) => !p.deletedAt);
+  }
+
+  get archivedPets(): Pet[] {
+    return this.pets.filter((p) => !!p.deletedAt);
+  }
+
   get filteredPets(): Pet[] {
-    if (this.selectedFilter === 'ALL') {
-      return this.pets;
+    let list: Pet[];
+    if (this.selectedFilter === 'ARCHIVED') list = this.archivedPets;
+    else if (this.selectedFilter === 'ALL') list = this.activePets;
+    else list = this.activePets.filter((p) => p.status === this.selectedFilter);
+    if (this.searchKeyword.trim()) {
+      list = list.filter((p) => matchesPet(p, this.searchKeyword));
     }
-    return this.pets.filter((p) => p.status === this.selectedFilter);
+    return list;
   }
 
   setFilter(status: string): void {
@@ -73,7 +96,7 @@ export class AdminPageComponent implements OnInit {
 
   // คำนวณจำนวนสัตว์เลี้ยงตามสถานะ
   getCountByStatus(status: string): number {
-    return this.pets.filter((p) => p.status === status).length;
+    return this.activePets.filter((p) => p.status === status).length;
   }
 
   getGenderThai(gender: string): string {
@@ -92,17 +115,46 @@ export class AdminPageComponent implements OnInit {
     }
   }
 
+  // ลบ = ย้ายไปเก็บถาวร: หายจากหน้าเว็บ แต่ข้อมูล คำขอ และประวัติยังอยู่ กู้คืนได้
   onDelete(id: number, name: string): void {
-    if (confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูล "${name}"?`)) {
+    if (confirm(this.i18n.tr(`ลบ "${name}" ออกจากหน้าเว็บใช่หรือไม่?\n(ข้อมูลจะย้ายไปแท็บ "เก็บถาวร" ยังค้นหาและกู้คืนได้)`, `Remove "${name}" from the website?\n(It moves to the "Archived" tab and can still be searched and restored)`))) {
       this.petService.delete(id).subscribe({
-        next: () => {
-          this.fetchPets(); // โหลดข้อมูลใหม่หลังจากลบ
-        },
-        error: (err) => {
-          console.error('Delete error:', err);
-          alert('ไม่สามารถลบข้อมูลได้');
-        },
+        next: () => this.fetchPets(),
+        error: (err) => alert(this.i18n.t(backendMessage(err, 'ไม่สามารถลบข้อมูลได้'))),
       });
     }
+  }
+
+  onRestore(pet: Pet): void {
+    if (!confirm(this.i18n.tr(`กู้คืน "${pet.name}" กลับมาแสดงในระบบใช่หรือไม่?`, `Restore "${pet.name}"?`))) return;
+    this.petService.restore(pet.id).subscribe({
+      next: () => this.fetchPets(),
+      error: (err) => alert(this.i18n.t(backendMessage(err, 'กู้คืนไม่สำเร็จ'))),
+    });
+  }
+
+  openHistory(pet: Pet): void {
+    this.historyPet = pet;
+    this.historyLoading = true;
+    this.historyError = '';
+    this.historyRequests = [];
+    this.historyLogs = [];
+    this.petService.history(pet.id).subscribe({
+      next: (res) => {
+        this.historyRequests = res.requests || [];
+        this.historyLogs = res.logs || [];
+        this.historyLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.historyError = backendMessage(err, 'โหลดประวัติไม่สำเร็จ');
+        this.historyLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  closeHistory(): void {
+    this.historyPet = null;
   }
 }

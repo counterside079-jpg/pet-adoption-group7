@@ -1,0 +1,38 @@
+<div style="max-width: 960px; margin: 0 auto; padding: 32px 16px 60px;">
+  <h1 class="page-title" style="font-size: 30px; font-weight: 800; color: var(--fg-0f172a); margin: 0 0 6px;">{{ '📋 คำขอรับเลี้ยงของฉัน' | t }}</h1>
+  <p style="color: var(--fg-64748b); margin: 0 0 20px;">{{ 'ติดตามสถานะคำขอที่คุณส่งไว้ ในชื่อบัญชี' | t }} <b>{{ (auth.user()?.fullName) | t }}</b> ({{ (auth.user()?.email) | t }})</p>
+
+  <div *ngIf="!loading && requests.length" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+    <span style="background: var(--bg-fef3c7); color: var(--fg-b45309); padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 14px;">{{ '⏳ รอพิจารณา' | t }} {{ (count('PENDING')) | t }}</span>
+    <span style="background: var(--bg-dcfce7); color: var(--fg-15803d); padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 14px;">{{ '✅ อนุมัติแล้ว' | t }} {{ (count('APPROVED')) | t }}</span>
+    <span style="background: var(--bg-fee2e2); color: var(--fg-b91c1c); padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 14px;">{{ '❌ ไม่อนุมัติ' | t }} {{ (count('REJECTED')) | t }}</span>
+    <button type="button" (click)="load()" style="margin-left: auto; background: var(--bg-f1f5f9); border: 1px solid var(--bd-e2e8f0); padding: 6px 14px; border-radius: 999px; font-weight: 600; cursor: pointer; font-family: inherit;">{{ '🔄 รีเฟรช' | t }}</button>
+  </div>
+
+  <div *ngIf="loading" style="text-align: center; padding: 60px 0; color: var(--fg-64748b);">{{ 'กำลังโหลด...' | t }}</div>
+  <div *ngIf="errorMessage" style="background: var(--bg-fef2f2); color: var(--fg-b91c1c); padding: 14px; border-radius: 12px;">⚠️ {{ (errorMessage) | t }}</div>
+
+  <div *ngIf="!loading && !errorMessage && requests.length === 0" style="text-align: center; padding: 50px 16px; background: var(--bg-ffffff); border-radius: 20px; border: 1px dashed var(--bd-cbd5e1);">
+    <div style="font-size: 44px;">🐶</div>
+    <p style="color: var(--fg-475569); font-size: 16px;">{{ 'คุณยังไม่ได้ส่งคำขอรับเลี้ยง' | t }}</p>
+    <a routerLink="/" style="display: inline-block; background: #15803d; color: #fff; padding: 10px 20px; border-radius: 999px; text-decoration: none; font-weight: 700;">{{ 'ดูน้องที่รอบ้าน' | t }}</a>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 14px;">
+    <div *ngFor="let r of requests" style="background: var(--bg-ffffff); border-radius: 18px; border: 1px solid var(--bd-e2e8f0); padding: 16px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+      <img [src]="cover(r.pet)" [alt]="r.pet?.name" style="width: 96px; height: 96px; object-fit: cover; border-radius: 14px; flex-shrink: 0;" />
+      <div style="flex: 1; min-width: 200px;">
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+          <span style="font-size: 18px; font-weight: 800; color: var(--fg-0f172a);">{{ (r.pet?.name) | t }}</span>
+          <span style="font-size: 13px; color: var(--fg-64748b);">{{ (r.pet?.petType?.name) | t }} {{ (r.pet?.breed ? '· ' + r.pet?.breed : '') | t }}</span>
+        </div>
+        <div style="font-size: 13px; color: var(--fg-64748b); margin-top: 4px;">{{ 'คำขอ #' | t }}{{ (r.id) | t }} {{ '· ส่งเมื่อ' | t }} {{ r.createdAt | tdate: 'd MMM y HH:mm' }} {{ '· อัปเดต' | t }} {{ r.updatedAt | tdate: 'd MMM y HH:mm' }}</div>
+        <div style="font-size: 14px; color: var(--fg-334155); margin-top: 8px;">{{ (hint(r.status)) | t }}</div>
+      </div>
+      <span [style.background]="badge(r.status).bg" [style.color]="badge(r.status).color"
+        style="padding: 8px 16px; border-radius: 999px; font-weight: 800; font-size: 14px; white-space: nowrap;">
+        {{ (badge(r.status).icon) | t }} {{ (statusTh[r.status]) | t }}
+      </span>
+    </div>
+  </div>
+</div>

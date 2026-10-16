@@ -1,18 +1,61 @@
-<!-- แถบเมนูหลัก (ใช้ร่วมกันทุกหน้า) -->
-<header style="background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50;">
-  <div class="site-nav" style="max-width: 1240px; margin: 0 auto; padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center;">
-    <a routerLink="/" style="font-size: 20px; font-weight: 800; color: #15803d; text-decoration: none; white-space: nowrap;">
-      🐾 บ้านพักใจ
+<!-- แถบเมนูหลัก (ใช้ร่วมกันทุกหน้า) : ลิงก์หลัก + ปุ่มเปลี่ยนภาษา + ปุ่มเปลี่ยนธีม + บัญชี -->
+<a class="skip-link" href="#main">{{ 'ข้ามไปยังเนื้อหา' | t }}</a>
+<header class="site-header">
+  <div class="site-nav">
+    <a routerLink="/" class="brand" [attr.aria-label]="'บ้านพักใจ' | t">
+      <span class="brand-mark">🐾</span><span class="brand-text">{{ 'บ้านพักใจ' | t }}</span>
     </a>
-    <nav class="site-links" style="display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center;">
-      <a routerLink="/" class="hide-mobile" style="text-decoration: none; color: #475569; font-weight: 600; font-size: 15px; white-space: nowrap;">สัตว์เลี้ยงทั้งหมด</a>
-      <a routerLink="/donate" style="text-decoration: none; color: #b45309; font-weight: 700; font-size: 15px; white-space: nowrap;">💛 ร่วมบริจาค</a>
-      <a routerLink="/admin" style="text-decoration: none; color: #16a34a; font-weight: 700; font-size: 15px; white-space: nowrap;">⚙️ Admin</a>
+
+    <nav class="site-links" [attr.aria-label]="'เมนูหลัก' | t">
+      <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link hide-mobile">{{ 'สัตว์เลี้ยงทั้งหมด' | t }}</a>
+      <a routerLink="/donate" routerLinkActive="is-active" class="nav-link nav-amber">💛 <span class="hide-mobile">{{ 'ร่วมบริจาค' | t }}</span><span class="show-mobile">{{ 'บริจาค' | t }}</span></a>
+
+      <ng-container *ngIf="auth.user() as u; else guest">
+        <a routerLink="/my-requests" routerLinkActive="is-active" class="nav-link nav-blue">📋 <span class="hide-mobile">{{ 'คำขอของฉัน' | t }}</span><span class="show-mobile">{{ 'คำขอ' | t }}</span></a>
+        <a *ngIf="auth.isAdmin()" routerLink="/admin" routerLinkActive="is-active" class="nav-link nav-green" [title]="'หน้าเจ้าหน้าที่' | t">⚙️ <span class="hide-mobile">Admin</span></a>
+        <span class="nav-user hide-mobile" [title]="u.email">👤 {{ u.fullName }}</span>
+        <button type="button" class="nav-logout" (click)="logout()" [title]="'ออกจากระบบ' | t">
+          <span class="show-mobile" aria-hidden="true">🚪</span><span class="hide-mobile">{{ 'ออกจากระบบ' | t }}</span>
+        </button>
+      </ng-container>
+      <ng-template #guest>
+        <a routerLink="/login" routerLinkActive="is-active" class="nav-link nav-green">{{ '🔑 เข้าสู่ระบบ' | t }}</a>
+        <a routerLink="/register" class="nav-cta hide-mobile">{{ 'สมัครสมาชิก' | t }}</a>
+      </ng-template>
+
+      <!-- ภาษา / ธีม -->
+      <div class="nav-tools">
+        <button type="button" class="tool-btn lang-btn" (click)="i18n.toggle()"
+          [title]="i18n.isEn() ? 'เปลี่ยนเป็นภาษาไทย' : 'Switch to English'"
+          [attr.aria-label]="i18n.isEn() ? 'เปลี่ยนเป็นภาษาไทย' : 'Switch to English'">
+          <span [class.on]="!i18n.isEn()">TH</span><span class="sep">/</span><span [class.on]="i18n.isEn()">EN</span>
+        </button>
+        <button type="button" class="tool-btn" (click)="theme.toggle()"
+          [title]="(theme.theme() === 'dark' ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด') | t"
+          [attr.aria-label]="(theme.theme() === 'dark' ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด') | t"
+          [attr.aria-pressed]="theme.theme() === 'dark'">
+          {{ theme.theme() === 'dark' ? '☀️' : '🌙' }}
+        </button>
+      </div>
     </nav>
   </div>
 </header>
 
 <!-- แต่ละหน้ากำหนดความกว้างและระยะขอบของตัวเอง -->
-<main>
+<main id="main">
   <router-outlet></router-outlet>
 </main>
+
+<!-- ส่วนท้ายเว็บ (ทุกหน้า) -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">{{ '🏡 บ้านพักใจ — ระบบจัดการและรับเลี้ยงสัตว์เลี้ยง' | t }}</div>
+    <div class="footer-meta">{{ 'เปิดทำการทุกวัน 09:00 - 17:00 น. | โทร: 02-123-4567 | Line: @baanpakjai' | t }}</div>
+    <nav class="footer-links" [attr.aria-label]="'ลิงก์ส่วนท้าย' | t">
+      <a routerLink="/">{{ 'สัตว์เลี้ยงทั้งหมด' | t }}</a>
+      <a routerLink="/donate">{{ 'ร่วมบริจาค' | t }}</a>
+      <a *ngIf="auth.isLoggedIn()" routerLink="/my-requests">{{ 'คำขอของฉัน' | t }}</a>
+      <a *ngIf="!auth.isLoggedIn()" routerLink="/login">{{ 'เข้าสู่ระบบ' | t }}</a>
+    </nav>
+  </div>
+</footer>

@@ -8,11 +8,10 @@
 
 | ลำดับ | รหัสนักศึกษา | ชื่อ - นามสกุล | บทบาทหน้าที่ |
 | :---: | :---: | :--- | :--- |
-| 1 | 67118729 | วรมันต์ ชูช่วย | **UX/UI & Frontend:** ออกแบบประสบการณ์ผู้ใช้และหน้าตาเว็บ และพัฒนาหน้าเว็บในช่วงแรกของโครงงาน |
-| 2 | 67108027 | สิทธิชัย ชูแก้ว | **System Concept & Presentation:** วางแนวคิดและขอบเขตของระบบ และจัดทำสไลด์นำเสนอ  |
-| 3 | 67105601 | พรรษกร นวนดำ | **Development, Deployment & Documentation:** แก้ไขและพัฒนาเว็บเพิ่มเติม นำระบบขึ้นใช้งานออนไลน์ และจัดทำรายงาน |
-| 4 | 67120782 | วิทย์ธวัช คงเทพ | **UX/UI Design & Presentation:** ออกแบบ UX/UI ของระบบ และจัดทำสไลด์นำเสนอ|
-
+| 1 | 67118729 | วรมันต์ ชูช่วย | **UX/UI & Frontend ช่วงแรก:** ออกแบบหน้าตาและประสบการณ์ใช้งาน วาง Layout หน้าหลัก และพัฒนาหน้าเว็บช่วงเริ่มต้นโครงงาน |
+| 2 | 67108027 | สิทธิชัย ชูแก้ว | **System Concept & Presentation:** คิดแนวคิดและขอบเขตระบบ กำหนดขั้นตอนการรับเลี้ยง และจัดทำสไลด์นำเสนอ |
+| 3 | 67105601 | พรรษกร นวนดำ | **Full-Stack Developer & Deploy:** พัฒนาและแก้ไขระบบทั้ง Frontend/Backend/Database นำเว็บขึ้นระบบออนไลน์ (Render + Neon) และจัดทำรายงาน |
+| 4 | 67120782 | วิทย์ธวัช คงเทพ | **UX/UI & Presentation:** ออกแบบ UX/UI ของหน้าต่างๆ และร่วมจัดทำสไลด์นำเสนอ |
 ---
 
 ## 🎯 วัตถุประสงค์ของโครงงาน
@@ -32,38 +31,21 @@
 ---
 
 ## 🗄️ โครงสร้างฐานข้อมูล (Database Structure)
-ระบบใช้ฐานข้อมูล PostgreSQL และสร้างโมเดลความสัมพันธ์แบบ **One-to-Many (1:N)** ผ่าน Prisma ORM:
+ระบบใช้ฐานข้อมูล PostgreSQL ผ่าน Prisma ORM มีทั้งหมด **7 ตาราง**
 
-* **PetType (ประเภทสัตว์เลี้ยง):** เก็บหมวดหมู่ เช่น สุนัข, แมว, กระต่าย
-  * `id` (Int, Primary Key, Auto Increment)
-  * `name` (String, Unique)
-  * `pets` (Relation: One-to-Many ไปยัง Pet)
+| ตาราง | หน้าที่ | ความสัมพันธ์ |
+| :--- | :--- | :--- |
+| **PetType** | ประเภทสัตว์ (สุนัข, แมว, กระต่าย ...) | 1 ประเภท : N สัตว์ |
+| **Pet** | ข้อมูลสัตว์แต่ละตัว + `deletedAt` (เก็บถาวรแทนการลบจริง) | N : 1 PetType |
+| **PetImage** | รูปภาพของสัตว์ (หลายรูปต่อ 1 ตัว) เก็บไฟล์ในฐานข้อมูล (`data` Bytes, `mimeType`, `sortOrder`) | N : 1 Pet |
+| **User** | บัญชีสมาชิกและเจ้าหน้าที่ (`email` ไม่ซ้ำ, `passwordHash`, `role` = `USER` / `ADMIN`) | 1 : N AdoptionRequest, ActivityLog |
+| **AdoptionRequest** | คำขอรับเลี้ยง ผูกกับสัตว์ (`petId`) และบัญชีผู้ส่ง (`userId`) สถานะ `PENDING` / `APPROVED` / `REJECTED` | N : 1 Pet, N : 1 User |
+| **Donation** | การแจ้งบริจาค สถานะ `PENDING` / `RECEIVED` / `CANCELLED` | - |
+| **ActivityLog** | ประวัติการทำงาน: ใคร (`userId`) ทำอะไร (`action`) กับข้อมูลไหน (`targetType`, `targetId`) เมื่อไร (`createdAt`) | N : 1 User |
 
-* **Pet (สัตว์เลี้ยง):** เก็บข้อมูลรายละเอียดของสัตว์เลี้ยงแต่ละตัว
-  * `id` (Int, Primary Key, Auto Increment)
-  * `name` (String, Required)
-  * `petTypeId` (Int, Foreign Key ชี้ไปที่ PetType)
-  * `gender` (String: `MALE`, `FEMALE`, `UNKNOWN`)
-  * `ageMonths` (Int, อายุเป็นจำนวนเต็มเดือน 0 - 600)
-  * `weightKg` (Float, น้ำหนัก)
-  * `breed` (String, สายพันธุ์)
-  * `status` (String: `AVAILABLE`, `PENDING`, `ADOPTED`, `UNAVAILABLE`)
-  * `healthNote` (String, ข้อมูลสุขภาพ/วัคซีน)
-  * `description` (String, ข้อมูลนิสัย/ประวัติ)
-  * `imageUrl` (String, URL รูปภาพ)
-  * `arrivedDate` (DateTime, วันที่รับเข้ามา)
-  * `adoptionRequests` (Relation: One-to-Many ไปยัง AdoptionRequest)
+**ฟิลด์หลักของ Pet:** `id`, `name`, `petTypeId`, `gender` (`MALE`/`FEMALE`/`UNKNOWN`), `ageMonths` (0-600), `weightKg`, `breed`, `status` (`AVAILABLE`/`PENDING`/`ADOPTED`/`UNAVAILABLE`), `healthNote`, `description`, `imageUrl` (ลิงก์รูปภายนอก ไม่บังคับ), `arrivedDate`, `deletedAt`
 
-* **AdoptionRequest (คำขอรับเลี้ยง):** แบบฟอร์มที่ผู้ใช้ส่งจากหน้า `/pets/:id/adopt` (Pet 1 ตัว มีได้หลายคำขอ)
-  * `id` (Int, Primary Key), `petId` (Int, Foreign Key ชี้ไปที่ Pet, ลบสัตว์แล้วคำขอถูกลบตาม)
-  * `firstName`, `lastName`, `email`, `phone`, `city`, `postalCode`, `country`, `adoptionReason` (String, บังคับกรอก)
-  * `prefix`, `address`, `socialContact`, `householdMembers`, `otherPets`, `housingDetails`, `occupationAndHours` ฯลฯ (String, ไม่บังคับ)
-  * `status` (String: `PENDING`, `APPROVED`, `REJECTED`), `createdAt`
-
-* **Donation (การบริจาค):** การแจ้งความประสงค์บริจาคจากหน้า `/donate` (ไม่ได้ตัดเงินจริง)
-  * `id` (Int, Primary Key), `donorName` (String, บังคับ), `email`, `phone`, `message` (String, ไม่บังคับ)
-  * `amount` (Float, 1 - 1,000,000 บาท), `method` (String: `TRANSFER`, `PROMPTPAY`, `CASH`)
-  * `status` (String: `PENDING`, `RECEIVED`, `CANCELLED`), `createdAt`
+**ค่า action ใน ActivityLog:** `CREATE`, `UPDATE`, `DELETE`, `RESTORE`, `STATUS`, `UPLOAD_IMAGE`, `DELETE_IMAGE` · **targetType:** `PET`, `ADOPTION_REQUEST`, `DONATION`, `USER`
 
 ---
 
@@ -77,27 +59,50 @@
 4. **ขอรับเลี้ยงได้เฉพาะสัตว์ที่ยังเปิดรับ:** ส่งคำขอได้เฉพาะสัตว์สถานะ `AVAILABLE` หรือ `PENDING` ถ้าเป็น `ADOPTED` / `UNAVAILABLE` จะตอบกลับ 400
 5. **อนุมัติคำขอแล้วสัตว์มีบ้านแล้ว:** เมื่อเจ้าหน้าที่อนุมัติคำขอ (`APPROVED`) สัตว์ตัวนั้นเปลี่ยนเป็น `ADOPTED` และคำขออื่นของตัวเดียวกันที่ยัง `PENDING` จะถูกเปลี่ยนเป็น `REJECTED` อัตโนมัติ (ทำใน Transaction เดียว)
 6. **การบริจาค:** จำนวนเงินต้องอยู่ระหว่าง 1 - 1,000,000 บาท สถานะเริ่มต้นเป็น `PENDING` จนกว่าเจ้าหน้าที่ตรวจยอดแล้วกด "ได้รับแล้ว"
+7. **ต้องเป็นสมาชิกก่อนขอรับเลี้ยง:** ผู้ใช้ต้องสมัครสมาชิก/เข้าสู่ระบบก่อนส่งคำขอ คำขอผูกกับบัญชี และติดตามสถานะได้ที่หน้า "คำขอของฉัน" (`/my-requests`) ผู้ใช้เห็นได้เฉพาะคำขอของตัวเอง
+8. **ห้ามส่งคำขอซ้ำ:** บัญชีเดียวกันส่งคำขอสัตว์ตัวเดียวกันซ้ำไม่ได้ ถ้าคำขอเดิมยัง `PENDING`
+9. **ยกเลิกการอนุมัติ:** ถ้าเปลี่ยนคำขอที่ `APPROVED` ไปเป็นสถานะอื่น สัตว์ตัวนั้นกลับเป็น `AVAILABLE` อัตโนมัติ (Transaction)
+10. **เจ้าหน้าที่มีบัญชีของตัวเอง:** ไม่มีรหัสผ่านกลางร่วมกัน ทุก API ของเจ้าหน้าที่ตรวจสิทธิ์ `ADMIN` ที่ Backend (AdminGuard) ไม่ใช่แค่ซ่อนหน้าเว็บ
+11. **บันทึกการทำงานทุกครั้ง (Audit Log):** การเพิ่ม/แก้ไข/ลบ/กู้คืน/อัปโหลดรูป/เปลี่ยนสถานะ ถูกบันทึกใน `ActivityLog` พร้อมชื่อเจ้าหน้าที่ผู้ทำ ดูย้อนหลังได้ที่ `/admin/logs`
+12. **ลบ = เก็บถาวร (Soft Delete):** การลบสัตว์จะตั้งค่า `deletedAt` แทนการลบจริง สัตว์ที่ลบแล้ว/มีบ้านแล้ว/ไม่พร้อม จะไม่แสดงหน้าเว็บผู้ใช้ แต่เจ้าหน้าที่ยังค้นหา ดูประวัติคำขอ และกู้คืนได้
+13. **รูปภาพ:** สัตว์ 1 ตัวมีรูปได้ไม่เกิน 10 รูป รูปละไม่เกิน 3 MB รับเฉพาะไฟล์รูปภาพ รูปแรกเป็นรูปปก
+14. **การค้นหา:** ค้นได้จากชื่อ สายพันธุ์ ประเภท เพศ (เช่น "ตัวเมีย") นิสัย/คำอธิบาย และบันทึกสุขภาพ พิมพ์หลายคำได้ (ต้องตรงทุกคำ) เช่น `แมว เมีย`
 
 ---
 
 ## 🌐 รายการ REST API Endpoints (Backend)
+สิทธิ์: 🌍 ทุกคน · 👤 ต้องเข้าสู่ระบบ (ส่ง `Authorization: Bearer <token>`) · 👮 เฉพาะเจ้าหน้าที่ (ADMIN)
 
-| Method | Endpoint | คำอธิบาย | พารามิเตอร์ / Body |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/pets` | ดึงรายการสัตว์เลี้ยงทั้งหมด | Query: `search`, `typeId`, `status` (ค่าเริ่มต้นแสดงเฉพาะ `AVAILABLE`, ส่ง `ALL` เพื่อดูทุกสถานะ) |
-| `GET` | `/api/pets/:id` | ดึงรายละเอียดสัตว์เลี้ยงตาม ID | Path: `id` |
-| `POST` | `/api/pets` | เพิ่มข้อมูลสัตว์เลี้ยงใหม่ | Body: `CreatePetDto` (JSON) |
-| `PUT` / `PATCH` | `/api/pets/:id` | แก้ไขข้อมูลสัตว์เลี้ยง (Frontend ใช้ PUT) | Path: `id`, Body: `UpdatePetDto` (JSON) |
-| `DELETE` | `/api/pets/:id` | ลบข้อมูลสัตว์เลี้ยงตาม ID | Path: `id` |
-| `GET` | `/api/pet-types` | ดึงรายการประเภทสัตว์เลี้ยงทั้งหมด | สำหรับแสดงผลใน Dropdown |
-| `POST` | `/api/adoption-requests` | ส่งแบบฟอร์มขอรับเลี้ยง | Body: `CreateAdoptionRequestDto` (JSON) |
-| `GET` | `/api/adoption-requests` | ดึงคำขอรับเลี้ยงทั้งหมด (หน้า Admin) | Query: `status` (`PENDING`, `APPROVED`, `REJECTED`, `ALL`) |
-| `PATCH` | `/api/adoption-requests/:id/status` | เปลี่ยนสถานะคำขอ (อนุมัติ / ไม่อนุมัติ) | Body: `{ "status": "APPROVED" }` |
-| `DELETE` | `/api/adoption-requests/:id` | ลบคำขอ | Path: `id` |
-| `POST` | `/api/donations` | แจ้งความประสงค์บริจาค | Body: `CreateDonationDto` (JSON) |
-| `GET` | `/api/donations` | ดึงรายการบริจาค (หน้า Admin) | Query: `status` |
-| `PATCH` | `/api/donations/:id/status` | ยืนยันรับเงิน / ยกเลิก | Body: `{ "status": "RECEIVED" }` |
-| `DELETE` | `/api/donations/:id` | ลบรายการบริจาค | Path: `id` |
+| Method | Endpoint | สิทธิ์ | คำอธิบาย |
+| :--- | :--- | :---: | :--- |
+| `POST` | `/api/auth/register` | 🌍 | สมัครสมาชิก `{ fullName, email, password, phone? }` → `{ token, user }` |
+| `POST` | `/api/auth/login` | 🌍 | เข้าสู่ระบบ `{ email, password }` → `{ token, user }` |
+| `GET` | `/api/auth/me` | 👤 | ข้อมูลบัญชีที่เข้าสู่ระบบอยู่ |
+| `GET` | `/api/pets` | 🌍 | รายการสัตว์ Query: `search`, `typeId`; ผู้ใช้ทั่วไปเห็นเฉพาะ `AVAILABLE` ที่ไม่ถูกลบ; เจ้าหน้าที่ส่ง `status=ALL` และ `archived=only/include` ได้ |
+| `GET` | `/api/pets/:id` | 🌍 | รายละเอียดสัตว์ (พร้อมรหัสรูป `images`) |
+| `GET` | `/api/pets/:id/history` | 👮 | ประวัติย้อนหลัง: คำขอทั้งหมด + บันทึกการทำงาน |
+| `POST` | `/api/pets` | 👮 | เพิ่มสัตว์ |
+| `PUT` / `PATCH` | `/api/pets/:id` | 👮 | แก้ไขสัตว์ |
+| `DELETE` | `/api/pets/:id` | 👮 | ลบ (เก็บถาวร) |
+| `POST` | `/api/pets/:id/restore` | 👮 | กู้คืนสัตว์ที่ลบแล้ว |
+| `POST` | `/api/pets/:id/images` | 👮 | อัปโหลดรูป (multipart/form-data ฟิลด์ `files` ได้หลายไฟล์) |
+| `GET` | `/api/pet-images/:id` | 🌍 | ไฟล์รูปภาพ |
+| `DELETE` | `/api/pet-images/:id` | 👮 | ลบรูป |
+| `GET` | `/api/pet-types` | 🌍 | ประเภทสัตว์ทั้งหมด |
+| `POST` | `/api/adoption-requests` | 👤 | ส่งคำขอรับเลี้ยง |
+| `GET` | `/api/adoption-requests/mine` | 👤 | คำขอของฉัน + สถานะ |
+| `GET` | `/api/adoption-requests` | 👮 | คำขอทั้งหมด Query: `status`, `q` (ค้นชื่อ/อีเมล/เบอร์/ชื่อสัตว์) |
+| `GET` | `/api/adoption-requests/:id` | 👤 | ดูคำขอ (ผู้ใช้ดูได้เฉพาะของตัวเอง) |
+| `PATCH` | `/api/adoption-requests/:id/status` | 👮 | อนุมัติ / ไม่อนุมัติ / กลับเป็นรอพิจารณา |
+| `DELETE` | `/api/adoption-requests/:id` | 👮 | ลบคำขอ |
+| `POST` | `/api/donations` | 🌍 | แจ้งบริจาค |
+| `GET` | `/api/donations` | 👮 | รายการบริจาค Query: `status` |
+| `PATCH` | `/api/donations/:id/status` | 👮 | ยืนยันรับเงิน / ยกเลิก |
+| `DELETE` | `/api/donations/:id` | 👮 | ลบรายการบริจาค |
+| `GET` | `/api/admins` | 👮 | รายชื่อเจ้าหน้าที่ |
+| `POST` | `/api/admins` | 👮 | เพิ่มเจ้าหน้าที่ (อีเมลที่สมัครไว้แล้วจะถูกยกระดับเป็น ADMIN) |
+| `DELETE` | `/api/admins/:id` | 👮 | ถอนสิทธิ์เจ้าหน้าที่ (ถอนสิทธิ์ตัวเองไม่ได้) |
+| `GET` | `/api/activity-logs` | 👮 | ประวัติการทำงาน Query: `targetType`, `targetId`, `userId`, `q` |
 
 ---
 
@@ -111,12 +116,13 @@ cd backend
 npm install
 ```
 
-1.2 สร้างไฟล์ `backend/.env` (ดูตัวอย่างใน `.env.example`) แล้วใส่ connection string ของ PostgreSQL:
+1.2 สร้างไฟล์ `backend/.env` (คัดลอกจาก `.env.example`) แล้วใส่ connection string ของ PostgreSQL และกุญแจ token:
 ```
 DATABASE_URL="postgresql://USER:PASSWORD@HOST/DBNAME?sslmode=require"
+JWT_SECRET="ข้อความยาวๆ ที่เดายาก"
 ```
 
-1.3 สร้างตารางในฐานข้อมูลและใส่ข้อมูลตัวอย่าง:
+1.3 สร้างตารางในฐานข้อมูลและใส่ข้อมูลตัวอย่าง (ประเภทสัตว์ สัตว์ตัวอย่าง และบัญชีทดสอบ):
 ```bash
 npx prisma generate
 npx prisma db push
@@ -142,18 +148,41 @@ npm start
 
 ## 🖥️ หน้าเว็บ (Angular Routing)
 
-| Path | หน้า |
-| :--- | :--- |
-| `/` | List Page — รายการสัตว์ที่พร้อมรับเลี้ยง พร้อมค้นหา กรองประเภท/เพศ และเรียงลำดับ |
-| `/pets/:id` | Detail Page — รายละเอียดสัตว์เลี้ยง |
-| `/pets/:id/adopt` | หน้าแบบฟอร์มขอรับเลี้ยง — บันทึกคำขอลงฐานข้อมูล |
-| `/donate` | หน้าร่วมบริจาค — แจ้งความประสงค์บริจาค |
-| `/admin` | หน้าจัดการ — แสดงทุกสถานะ พร้อมกรองสถานะ แก้ไข และลบ |
-| `/admin/new` | Add Page — เพิ่มสัตว์เลี้ยง |
-| `/admin/requests` | คำขอรับเลี้ยง — ดูแบบฟอร์ม อนุมัติ / ไม่อนุมัติ / ลบ |
-| `/admin/donations` | การบริจาค — ดูยอดรวม ยืนยันรับเงิน / ยกเลิก / ลบ |
-| `/admin/:id/edit` | Edit Page — แก้ไขสัตว์เลี้ยง |
+| Path | สิทธิ์ | หน้า |
+| :--- | :---: | :--- |
+| `/` | 🌍 | รายการสัตว์ที่พร้อมรับเลี้ยง ค้นหาได้หลายช่องข้อมูล กรองประเภท/เพศ เรียงลำดับ |
+| `/pets/:id` | 🌍 | รายละเอียดสัตว์ + แกลเลอรีรูป |
+| `/login` , `/register` | 🌍 | เข้าสู่ระบบ (ใช้หน้าเดียวกันทั้งสมาชิกและเจ้าหน้าที่) / สมัครสมาชิก |
+| `/pets/:id/adopt` | 👤 | แบบฟอร์มขอรับเลี้ยง (เติมชื่อ อีเมล เบอร์ จากบัญชีให้อัตโนมัติ) |
+| `/my-requests` | 👤 | คำขอของฉัน — ติดตามสถานะ รอพิจารณา / อนุมัติแล้ว / ไม่อนุมัติ |
+| `/donate` | 🌍 | ร่วมบริจาค |
+| `/admin` | 👮 | จัดการสัตว์: ทุกสถานะ + แท็บเก็บถาวร ค้นหา แก้ไข ลบ กู้คืน ดูประวัติ |
+| `/admin/new` , `/admin/:id/edit` | 👮 | เพิ่ม / แก้ไขสัตว์ พร้อมอัปโหลดรูปหลายรูป |
+| `/admin/requests` | 👮 | คำขอรับเลี้ยง: ค้นหา อนุมัติ / ไม่อนุมัติ / ลบ |
+| `/admin/donations` | 👮 | การบริจาค |
+| `/admin/logs` | 👮 | ประวัติการทำงานของเจ้าหน้าที่ (ใครทำอะไร เมื่อไร) |
+| `/admin/accounts` | 👮 | บัญชีเจ้าหน้าที่: เพิ่ม / ถอนสิทธิ์ |
 
-## หน้าเจ้าหน้าที่ (Admin)
-หน้า /admin, /admin/new, /admin/:id/edit, /admin/requests และ /admin/donations ต้องกรอกรหัสผ่านก่อนเข้า
-รหัสผ่าน: admin1234
+## 🎨 ธีมและภาษา (UX/UI)
+* **โหมดสว่าง / มืด:** ปุ่ม 🌙 / ☀️ บนแถบเมนู ครั้งแรกใช้ตามการตั้งค่าของเครื่อง เลือกแล้วจำไว้ในเบราว์เซอร์ (`localStorage: bpj_theme`) สีทุกหน้าอ้างตัวแปร CSS ใน `frontend/src/styles.css` (โหมดสว่างใช้สีเดิมทุกค่า)
+* **ภาษาไทย / อังกฤษ:** ปุ่ม `TH / EN` บนแถบเมนู ข้อความในหน้าเว็บส่งผ่าน pipe `| t` แล้วแปลจากพจนานุกรม `frontend/src/app/i18n/en.ts` ถ้าไม่มีคำแปลจะแสดงภาษาไทยเดิม วันที่แสดงตามภาษา (ไทยเป็น พ.ศ.) และจำภาษาที่เลือกไว้ (`bpj_lang`)
+* ข้อมูลที่เจ้าหน้าที่กรอกเอง (ชื่อสัตว์ คำอธิบาย) แสดงตามที่กรอก ไม่ถูกแปล
+* รองรับมือถือ: แถบเมนูย่อเหลือไอคอน ปุ่มภาษา/ธีมอยู่บนแถบเมนูทุกขนาดจอ มีโฟกัสชัดเจนเมื่อใช้คีย์บอร์ด
+
+## 🔑 บัญชีทดสอบ (สร้างโดย `npx prisma db seed`)
+
+| บทบาท | อีเมล | รหัสผ่าน |
+| :--- | :--- | :--- |
+| เจ้าหน้าที่ 1 | `admin@banphakjai.com` | `admin1234` |
+| เจ้าหน้าที่ 2 | `staff@banphakjai.com` | `staff1234` |
+| สมาชิกทั่วไป | `user@banphakjai.com` | `user1234` |
+
+> รหัสผ่านเก็บในฐานข้อมูลแบบ hash (scrypt + salt) ไม่เก็บรหัสจริง · token มีอายุ 7 วัน · ควรเปลี่ยนรหัสบัญชีทดสอบก่อนใช้งานจริง
+
+## ✅ ทดสอบติดตั้งบนเครื่องใหม่ (Fresh Install Checklist)
+1. ติดตั้ง Node.js 20+ และมีฐานข้อมูล PostgreSQL (ในเครื่องหรือ Neon)
+2. ทำตามขั้นตอนติดตั้งด้านบน (`npm install` → `.env` → `prisma generate` → `db push` → `db seed` → `start:dev`)
+3. เปิด `http://localhost:3000/api/pets` ต้องเห็นข้อมูล JSON ของสัตว์ตัวอย่าง
+4. เปิด `http://localhost:4200` → สมัครสมาชิกใหม่ → ส่งคำขอรับเลี้ยง → ดูสถานะที่ "คำขอของฉัน"
+5. เข้าสู่ระบบด้วย `admin@banphakjai.com` → เพิ่มสัตว์พร้อมรูป 2-3 รูป → อนุมัติคำขอ → ดู "ประวัติการทำงาน"
+6. กลับไปบัญชีสมาชิก สถานะคำขอต้องเป็น "อนุมัติแล้ว" และสัตว์ตัวนั้นต้องหายจากหน้ารายการ

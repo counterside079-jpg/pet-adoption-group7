@@ -1,82 +1,82 @@
 <div style="padding: 32px 16px 80px 16px;">
-<div style="max-width: 650px; width: 100%; box-sizing: border-box; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 28px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-  <a routerLink="/admin" style="text-decoration: none; color: #64748b; font-size: 14px; font-weight: 600; display: inline-block; margin-bottom: 16px;">
-    ← กลับไปหน้าระบบจัดการ (Admin)
+<div style="max-width: 650px; width: 100%; box-sizing: border-box; margin: 0 auto; background: var(--bg-ffffff); border: 1px solid var(--bd-e2e8f0); border-radius: 16px; padding: 28px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+  <a routerLink="/admin" style="text-decoration: none; color: var(--fg-64748b); font-size: 14px; font-weight: 600; display: inline-block; margin-bottom: 16px;">
+    {{ '← กลับไปหน้าระบบจัดการ (Admin)' | t }}
   </a>
 
-  <h2 style="font-size: 22px; font-weight: 800; color: #0f172a; margin: 0 0 20px 0;">
-    {{ isEditMode ? 'แก้ไขข้อมูลสัตว์เลี้ยง (Edit Pet)' : 'เพิ่มสัตว์เลี้ยงใหม่ (New Pet)' }}
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--fg-0f172a); margin: 0 0 20px 0;">
+    {{ (isEditMode ? 'แก้ไขข้อมูลสัตว์เลี้ยง (Edit Pet)' : 'เพิ่มสัตว์เลี้ยงใหม่ (New Pet)') | t }}
   </h2>
 
   <!-- กล่องแสดงข้อความ Error จากเซิร์ฟเวอร์ -->
-  <div *ngIf="backendError" style="background: #fee2e2; border-left: 4px solid #ef4444; color: #b91c1c; padding: 14px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
-    <strong>⚠️ ข้อผิดพลาดจากเซิร์ฟเวอร์:</strong> {{ backendError }}
+  <div *ngIf="backendError" style="background: var(--bg-fee2e2); border-left: 4px solid var(--bd-ef4444); color: var(--fg-b91c1c); padding: 14px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
+    <strong>{{ '⚠️ ข้อผิดพลาดจากเซิร์ฟเวอร์:' | t }}</strong> {{ (backendError) | t }}
   </div>
 
   <form [formGroup]="petForm" (ngSubmit)="onSubmit()">
     <!-- 1. ชื่อสัตว์เลี้ยง (แก้ข้อ 13: รองรับแจ้งเตือน whitespace) -->
     <div style="margin-bottom: 16px;">
-      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #334155;">
-        ชื่อสัตว์เลี้ยง <span style="color: #ef4444;">*</span>
+      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--fg-334155);">
+        {{ 'ชื่อสัตว์เลี้ยง' | t }} <span style="color: var(--fg-ef4444);">*</span>
       </label>
       <input
         type="text"
         formControlName="name"
-        placeholder="เช่น เจ้ามอม, นำโชค"
-        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;"
-        [style.borderColor]="f('name')?.invalid && f('name')?.touched ? '#ef4444' : '#cbd5e1'"
+        [placeholder]="'เช่น เจ้ามอม, นำโชค' | t"
+        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;"
+        [style.borderColor]="f('name')?.invalid && f('name')?.touched ? 'var(--bd-ef4444)' : 'var(--bd-cbd5e1)'"
       />
-      <span *ngIf="(f('name')?.hasError('required') || f('name')?.hasError('whitespace')) && f('name')?.touched" style="color: #ef4444; font-size: 12px; display: block; margin-top: 4px;">
-        กรุณากรอกชื่อสัตว์เลี้ยง (ห้ามเว้นว่างหรือเป็นช่องว่างล้วน)
+      <span *ngIf="(f('name')?.hasError('required') || f('name')?.hasError('whitespace')) && f('name')?.touched" style="color: var(--fg-ef4444); font-size: 12px; display: block; margin-top: 4px;">
+        {{ 'กรุณากรอกชื่อสัตว์เลี้ยง (ห้ามเว้นว่างหรือเป็นช่องว่างล้วน)' | t }}
       </span>
     </div>
 
     <!-- 2. ประเภทสัตว์เลี้ยง -->
     <div style="margin-bottom: 16px;">
-      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #334155;">
-        ประเภทสัตว์เลี้ยง <span style="color: #ef4444;">*</span>
+      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--fg-334155);">
+        {{ 'ประเภทสัตว์เลี้ยง' | t }} <span style="color: var(--fg-ef4444);">*</span>
       </label>
       <select
         formControlName="petTypeId"
-        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;"
-        [style.borderColor]="f('petTypeId')?.invalid && f('petTypeId')?.touched ? '#ef4444' : '#cbd5e1'"
+        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;"
+        [style.borderColor]="f('petTypeId')?.invalid && f('petTypeId')?.touched ? 'var(--bd-ef4444)' : 'var(--bd-cbd5e1)'"
       >
-        <option [ngValue]="null" disabled>-- เลือกประเภทสัตว์เลี้ยง --</option>
-        <option *ngFor="let t of petTypes" [value]="t.id">{{ t.name }}</option>
+        <option [ngValue]="null" disabled>{{ '-- เลือกประเภทสัตว์เลี้ยง --' | t }}</option>
+        <option *ngFor="let t of petTypes" [value]="t.id">{{ (t.name) | t }}</option>
       </select>
-      <span *ngIf="f('petTypeId')?.hasError('required') && f('petTypeId')?.touched" style="color: #ef4444; font-size: 12px; display: block; margin-top: 4px;">
-        ต้องเลือกประเภทสัตว์เลี้ยง
+      <span *ngIf="f('petTypeId')?.hasError('required') && f('petTypeId')?.touched" style="color: var(--fg-ef4444); font-size: 12px; display: block; margin-top: 4px;">
+        {{ 'ต้องเลือกประเภทสัตว์เลี้ยง' | t }}
       </span>
     </div>
 
     <!-- 👈 แก้ข้อ 15: แถว เพศ และ อายุ (เพิ่ม flex-wrap: wrap และ flex: 1 1 200px เพื่อให้ตัดขึ้นบรรทัดใหม่บนมือถือ) -->
     <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;">
       <div style="flex: 1 1 200px; min-width: 0;">
-        <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #334155;">
-          เพศ <span style="color: #ef4444;">*</span>
+        <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--fg-334155);">
+          {{ 'เพศ' | t }} <span style="color: var(--fg-ef4444);">*</span>
         </label>
-        <select formControlName="gender" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
-          <option value="MALE">ผู้ (Male)</option>
-          <option value="FEMALE">เมีย (Female)</option>
-          <option value="UNKNOWN">ไม่ระบุ / ยังไม่ทราบ (Unknown)</option>
+        <select formControlName="gender" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;">
+          <option value="MALE">{{ 'ผู้ (Male)' | t }}</option>
+          <option value="FEMALE">{{ 'เมีย (Female)' | t }}</option>
+          <option value="UNKNOWN">{{ 'ไม่ระบุ / ยังไม่ทราบ (Unknown)' | t }}</option>
         </select>
       </div>
 
       <div style="flex: 1 1 200px; min-width: 0;">
-        <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #334155;">
-          อายุ (เดือน) <span style="color: #ef4444;">*</span>
+        <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--fg-334155);">
+          {{ 'อายุ (เดือน)' | t }} <span style="color: var(--fg-ef4444);">*</span>
         </label>
         <input
           type="number"
           formControlName="ageMonths"
           placeholder="0 - 600"
-          style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;"
-          [style.borderColor]="f('ageMonths')?.invalid && f('ageMonths')?.touched ? '#ef4444' : '#cbd5e1'"
+          style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;"
+          [style.borderColor]="f('ageMonths')?.invalid && f('ageMonths')?.touched ? 'var(--bd-ef4444)' : 'var(--bd-cbd5e1)'"
         />
-        <div *ngIf="f('ageMonths')?.invalid && f('ageMonths')?.touched" style="color: #ef4444; font-size: 12px; margin-top: 4px;">
-          <span *ngIf="f('ageMonths')?.hasError('required')">กรุณากรอกอายุ</span>
-          <span *ngIf="f('ageMonths')?.hasError('min') || f('ageMonths')?.hasError('max')">อายุต้องอยู่ระหว่าง 0 ถึง 600 เดือน</span>
-          <span *ngIf="f('ageMonths')?.hasError('pattern')">อายุต้องเป็นจำนวนเต็มเท่านั้น</span>
+        <div *ngIf="f('ageMonths')?.invalid && f('ageMonths')?.touched" style="color: var(--fg-ef4444); font-size: 12px; margin-top: 4px;">
+          <span *ngIf="f('ageMonths')?.hasError('required')">{{ 'กรุณากรอกอายุ' | t }}</span>
+          <span *ngIf="f('ageMonths')?.hasError('min') || f('ageMonths')?.hasError('max')">{{ 'อายุต้องอยู่ระหว่าง 0 ถึง 600 เดือน' | t }}</span>
+          <span *ngIf="f('ageMonths')?.hasError('pattern')">{{ 'อายุต้องเป็นจำนวนเต็มเท่านั้น' | t }}</span>
         </div>
       </div>
     </div>
@@ -84,94 +84,124 @@
     <!-- 👈 แก้ข้อ 15: แถว น้ำหนัก และ วันที่รับเข้า (เพิ่ม flex-wrap: wrap และ flex: 1 1 200px เพื่อให้ตัดขึ้นบรรทัดใหม่บนมือถือ) -->
     <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;">
       <div style="flex: 1 1 200px; min-width: 0;">
-        <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #334155;">
-          น้ำหนัก (กก.)
+        <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--fg-334155);">
+          {{ 'น้ำหนัก (กก.)' | t }}
         </label>
         <input
           type="number"
           step="0.1"
           formControlName="weightKg"
-          placeholder="เช่น 4.5"
-          style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;"
-          [style.borderColor]="f('weightKg')?.invalid && f('weightKg')?.touched ? '#ef4444' : '#cbd5e1'"
+          [placeholder]="'เช่น 4.5' | t"
+          style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;"
+          [style.borderColor]="f('weightKg')?.invalid && f('weightKg')?.touched ? 'var(--bd-ef4444)' : 'var(--bd-cbd5e1)'"
         />
-        <span *ngIf="f('weightKg')?.hasError('min') && f('weightKg')?.touched" style="color: #ef4444; font-size: 12px; display: block; margin-top: 4px;">
-          น้ำหนักต้องไม่ติดลบ
+        <span *ngIf="f('weightKg')?.hasError('min') && f('weightKg')?.touched" style="color: var(--fg-ef4444); font-size: 12px; display: block; margin-top: 4px;">
+          {{ 'น้ำหนักต้องไม่ติดลบ' | t }}
         </span>
       </div>
 
       <div style="flex: 1 1 200px; min-width: 0;">
-        <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #334155;">
-          วันที่รับเข้ามา
+        <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--fg-334155);">
+          {{ 'วันที่รับเข้ามา' | t }}
         </label>
         <input
           type="date"
           formControlName="arrivedDate"
-          style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;"
+          style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;"
         />
       </div>
     </div>
 
     <!-- บันทึกสุขภาพ -->
     <div style="margin-bottom: 16px;">
-      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #334155;">
-        บันทึกสุขภาพ / การฉีดวัคซีน
+      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--fg-334155);">
+        {{ 'บันทึกสุขภาพ / การฉีดวัคซีน' | t }}
       </label>
       <input
         type="text"
         formControlName="healthNote"
-        placeholder="เช่น ได้รับวัคซีนครบแล้ว, ทำหมันแล้ว"
-        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;"
+        [placeholder]="'เช่น ได้รับวัคซีนครบแล้ว, ทำหมันแล้ว' | t"
+        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;"
       />
     </div>
 
     <!-- สถานะ -->
     <div style="margin-bottom: 16px;">
-      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #334155;">สถานะ</label>
-      <select formControlName="status" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
-        <option value="AVAILABLE">AVAILABLE (พร้อมรับเลี้ยง)</option>
-        <option value="PENDING">PENDING (กำลังตรวจสอบ)</option>
-        <option value="ADOPTED">ADOPTED (รับเลี้ยงแล้ว)</option>
-        <option value="UNAVAILABLE">UNAVAILABLE (ไม่พร้อมรับเลี้ยง)</option>
+      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--fg-334155);">{{ 'สถานะ' | t }}</label>
+      <select formControlName="status" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;">
+        <option value="AVAILABLE">{{ 'AVAILABLE (พร้อมรับเลี้ยง)' | t }}</option>
+        <option value="PENDING">{{ 'PENDING (กำลังตรวจสอบ)' | t }}</option>
+        <option value="ADOPTED">{{ 'ADOPTED (รับเลี้ยงแล้ว)' | t }}</option>
+        <option value="UNAVAILABLE">{{ 'UNAVAILABLE (ไม่พร้อมรับเลี้ยง)' | t }}</option>
       </select>
     </div>
 
     <!-- สายพันธุ์ -->
     <div style="margin-bottom: 16px;">
-      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #334155;">สายพันธุ์</label>
+      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--fg-334155);">{{ 'สายพันธุ์' | t }}</label>
       <input
         type="text"
         formControlName="breed"
-        placeholder="เช่น ไซบีเรียน, โกลเด้น, ไทยแท้"
-        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;"
+        [placeholder]="'เช่น ไซบีเรียน, โกลเด้น, ไทยแท้' | t"
+        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;"
       />
     </div>
 
-    <!-- URL รูปภาพ -->
+    <!-- รูปภาพ (อัปโหลดได้หลายรูป รูปแรกคือรูปปก) -->
+    <div style="margin-bottom: 16px; border: 1px dashed var(--bd-cbd5e1); border-radius: 12px; padding: 14px;">
+      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 4px; color: var(--fg-334155);">
+        {{ '📷 รูปภาพสัตว์เลี้ยง' | t }} <span style="font-weight: 400; color: var(--fg-94a3b8);">({{ (existingImages.length + newFiles.length) | t }}/{{ (MAX_IMAGES) | t }} {{ 'รูป · รูปละไม่เกิน' | t }} {{ (MAX_SIZE_MB) | t }}{{ 'MB · รูปแรกเป็นรูปปก)' | t }}</span>
+      </label>
+
+      <div *ngIf="existingImages.length || newFiles.length" style="display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0;">
+        <div *ngFor="let img of existingImages; let i = index" style="position: relative; width: 92px; height: 92px;">
+          <img [src]="imageUrlOf(img.id)" [alt]="'รูปที่อัปโหลดแล้ว' | t" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px; border: 1px solid var(--bd-e2e8f0);" />
+          <span *ngIf="i === 0" style="position: absolute; left: 4px; bottom: 4px; background: #15803d; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 6px;">{{ 'ปก' | t }}</span>
+          <button type="button" (click)="deleteExistingImage(img)" [title]="'ลบรูปนี้' | t"
+            style="position: absolute; top: -6px; right: -6px; width: 24px; height: 24px; border-radius: 50%; border: none; background: #dc2626; color: #fff; cursor: pointer; font-size: 13px; line-height: 1;">×</button>
+        </div>
+        <div *ngFor="let f of newFiles; let i = index" style="position: relative; width: 92px; height: 92px;">
+          <img [src]="f.preview" [alt]="f.file.name" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px; border: 2px solid var(--bd-86efac);" />
+          <span style="position: absolute; left: 4px; bottom: 4px; background: #f59e0b; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 6px;">{{ 'ใหม่' | t }}</span>
+          <button type="button" (click)="removeNewFile(i)" [title]="'ไม่เอารูปนี้' | t"
+            style="position: absolute; top: -6px; right: -6px; width: 24px; height: 24px; border-radius: 50%; border: none; background: #64748b; color: #fff; cursor: pointer; font-size: 13px; line-height: 1;">×</button>
+        </div>
+      </div>
+
+      <label *ngIf="existingImages.length + newFiles.length < MAX_IMAGES"
+        style="display: inline-block; background: var(--bg-f0fdf4); color: var(--fg-15803d); border: 1px solid var(--bd-bbf7d0); padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer;">
+        {{ '➕ เลือกรูปจากเครื่อง (เลือกได้หลายรูป)' | t }}
+        <input type="file" accept="image/*" multiple (change)="onFilesSelected($event)" style="display: none;" />
+      </label>
+      <div *ngIf="newFiles.length" style="font-size: 12px; color: var(--fg-b45309); margin-top: 6px;">{{ 'รูปใหม่' | t }} {{ newFiles.length }} {{ 'รูป จะถูกอัปโหลดเมื่อกดปุ่มบันทึกด้านล่าง' | t }}</div>
+      <div *ngIf="imageError" style="font-size: 12px; color: var(--fg-dc2626); margin-top: 6px;">⚠️ {{ (imageError) | t }}</div>
+    </div>
+
+    <!-- URL รูปภาพ (ทางเลือก: ใช้ลิงก์รูปจากเว็บอื่นแทนการอัปโหลด) -->
     <div style="margin-bottom: 16px;">
-      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #334155;">
-        URL รูปภาพ
+      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--fg-334155);">
+        {{ 'หรือใส่ URL รูปภาพ' | t }} <span style="font-weight: 400; color: var(--fg-94a3b8);">{{ '(ไม่บังคับ แสดงต่อท้ายรูปที่อัปโหลด)' | t }}</span>
       </label>
       <input
         type="text"
         formControlName="imageUrl"
         placeholder="https://example.com/image.jpg"
-        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;"
-        [style.borderColor]="f('imageUrl')?.invalid && f('imageUrl')?.touched ? '#ef4444' : '#cbd5e1'"
+        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;"
+        [style.borderColor]="f('imageUrl')?.invalid && f('imageUrl')?.touched ? 'var(--bd-ef4444)' : 'var(--bd-cbd5e1)'"
       />
-      <span *ngIf="f('imageUrl')?.hasError('pattern') && f('imageUrl')?.touched" style="color: #ef4444; font-size: 12px; display: block; margin-top: 4px;">
-        URL รูปภาพต้องขึ้นต้นด้วย http:// หรือ https:// เท่านั้น
+      <span *ngIf="f('imageUrl')?.hasError('pattern') && f('imageUrl')?.touched" style="color: var(--fg-ef4444); font-size: 12px; display: block; margin-top: 4px;">
+        {{ 'URL รูปภาพต้องขึ้นต้นด้วย http:// หรือ https:// เท่านั้น' | t }}
       </span>
     </div>
 
     <!-- รายละเอียด -->
     <div style="margin-bottom: 24px;">
-      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #334155;">คำอธิบาย / รายละเอียดเพิ่มเติม</label>
+      <label style="display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--fg-334155);">{{ 'คำอธิบาย / รายละเอียดเพิ่มเติม' | t }}</label>
       <textarea
         formControlName="description"
         rows="3"
-        placeholder="ระบุลักษณะนิสัย ความชอบ หรือข้อมูลเพิ่มเติม..."
-        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;"
+        [placeholder]="'ระบุลักษณะนิสัย ความชอบ หรือข้อมูลเพิ่มเติม...' | t"
+        style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;"
       ></textarea>
     </div>
 
@@ -179,9 +209,9 @@
     <button
       type="submit"
       [disabled]="loading"
-      style="width: 100%; padding: 12px; background: #0f172a; color: #ffffff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;"
+      style="width: 100%; padding: 12px; background: var(--bg-0f172a); color: #ffffff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;"
     >
-      {{ loading ? 'กำลังดำเนินการ...' : (isEditMode ? 'บันทึกการแก้ไข' : 'เพิ่มสัตว์เลี้ยง') }}
+      {{ (loading ? 'กำลังดำเนินการ...' : (isEditMode ? 'บันทึกการแก้ไข' : 'เพิ่มสัตว์เลี้ยง')) | t }}
     </button>
   </form>
 </div>

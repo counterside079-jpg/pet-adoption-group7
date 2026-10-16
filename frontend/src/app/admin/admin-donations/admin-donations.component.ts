@@ -1,5 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { TPipe, TDatePipe } from '../../shared/t.pipe';
 import { CommonModule } from '@angular/common';
+import { I18nService } from '../../services/i18n.service';
 import { AdminNavComponent } from '../admin-nav/admin-nav.component';
 import { RequestService, backendMessage } from '../../services/request.service';
 import {
@@ -12,10 +14,11 @@ import {
 @Component({
   selector: 'app-admin-donations',
   standalone: true,
-  imports: [CommonModule, AdminNavComponent],
+  imports: [CommonModule, AdminNavComponent, TPipe, TDatePipe],
   templateUrl: './admin-donations.component.html',
 })
 export class AdminDonationsComponent implements OnInit {
+  readonly i18n = inject(I18nService);
   donations: Donation[] = [];
   loading = true;
   errorMessage = '';
@@ -66,11 +69,11 @@ export class AdminDonationsComponent implements OnInit {
   }
 
   statusColor(s: DonationStatus): string {
-    return s === 'RECEIVED' ? '#15803d' : s === 'CANCELLED' ? '#64748b' : '#a16207';
+    return s === 'RECEIVED' ? 'var(--fg-15803d)' : s === 'CANCELLED' ? 'var(--fg-64748b)' : 'var(--fg-a16207)';
   }
 
   statusBg(s: DonationStatus): string {
-    return s === 'RECEIVED' ? '#dcfce7' : s === 'CANCELLED' ? '#f1f5f9' : '#fef9c3';
+    return s === 'RECEIVED' ? 'var(--bg-dcfce7)' : s === 'CANCELLED' ? 'var(--bg-f1f5f9)' : 'var(--bg-fef9c3)';
   }
 
   setStatus(d: Donation, status: DonationStatus): void {
@@ -79,18 +82,18 @@ export class AdminDonationsComponent implements OnInit {
         this.donations = this.donations.map((x) => (x.id === updated.id ? updated : x));
         this.cdr.detectChanges();
       },
-      error: (err) => alert(backendMessage(err, 'เปลี่ยนสถานะไม่สำเร็จ')),
+      error: (err) => alert(this.i18n.t(backendMessage(err, 'เปลี่ยนสถานะไม่สำเร็จ'))),
     });
   }
 
   remove(d: Donation): void {
-    if (!confirm(`ลบรายการบริจาคของ ${d.donorName} (${d.amount.toLocaleString()} บาท) ถาวร?`)) return;
+    if (!confirm(this.i18n.tr(`ลบรายการบริจาคของ ${d.donorName} (${d.amount.toLocaleString()} บาท) ถาวร?`, `Permanently delete the donation from ${d.donorName} (${d.amount.toLocaleString()} THB)?`))) return;
     this.requestService.deleteDonation(d.id).subscribe({
       next: () => {
         this.donations = this.donations.filter((x) => x.id !== d.id);
         this.cdr.detectChanges();
       },
-      error: (err) => alert(backendMessage(err, 'ลบรายการไม่สำเร็จ')),
+      error: (err) => alert(this.i18n.t(backendMessage(err, 'ลบรายการไม่สำเร็จ'))),
     });
   }
 }

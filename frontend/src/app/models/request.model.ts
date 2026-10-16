@@ -25,13 +25,15 @@ export interface AdoptionRequest {
   adoptionReason: string;
   receiveNews: boolean;
   status: AdoptionRequestStatus;
+  userId?: number | null;
+  user?: { id: number; fullName: string; email: string } | null; // บัญชีที่ส่งคำขอ
   createdAt: string;
   updatedAt: string;
 }
 
 export type NewAdoptionRequest = Omit<
   AdoptionRequest,
-  'id' | 'pet' | 'status' | 'createdAt' | 'updatedAt'
+  'id' | 'pet' | 'status' | 'createdAt' | 'updatedAt' | 'userId' | 'user'
 >;
 
 export type DonationStatus = 'PENDING' | 'RECEIVED' | 'CANCELLED';

@@ -12,6 +12,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
+  <meta name="theme-color" content="#15803d">
+  <!-- ตั้งธีมและภาษาก่อนหน้าเว็บโหลด เพื่อไม่ให้จอกระพริบสีขาวตอนเปิดโหมดมืด -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('bpj_theme');
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+        var l = localStorage.getItem('bpj_lang');
+        if (l === 'en' || l === 'th') document.documentElement.lang = l;
+      } catch (e) {}
+    })();
+  </script>
   <style>
     /* บังคับใช้ฟอนต์และสีพื้นหลังทั้งโปรเจกต์ */
     body {
@@ -20,6 +35,10 @@
       margin: 0;
       padding: 0;
       -webkit-font-smoothing: antialiased;
+    }
+    html[data-theme='dark'] body {
+      background-color: #0b1220;
+      color: #f1f5f9;
     }
   </style>
 </head>

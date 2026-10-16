@@ -1,3 +1,117 @@
+/* ===== ธีมสี (Light / Dark) =====
+   สีในหน้าเว็บทุกจุดอ้างตัวแปรเหล่านี้ (เช่น var(--bg-ffffff) = พื้นการ์ด)
+   โหมดสว่างใช้สีเดิมทุกค่า หน้าตาเหมือนเดิม 100% ส่วนโหมดมืดเปลี่ยนเฉพาะค่าใน [data-theme='dark'] */
+:root {
+  color-scheme: light;
+  --page-bg: #f8fafc;
+  --overlay: rgba(255, 255, 255, 0.95);
+  --nav-bg: rgba(255, 255, 255, 0.92);
+  --focus-ring: rgba(22, 163, 74, 0.35);
+  --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+  --bd-86efac: #86efac;
+  --bd-bbf7d0: #bbf7d0;
+  --bd-bfdbfe: #bfdbfe;
+  --bd-cbd5e1: #cbd5e1;
+  --bd-e2e8f0: #e2e8f0;
+  --bd-ef4444: #ef4444;
+  --bd-f1f5f9: #f1f5f9;
+  --bd-f87171: #f87171;
+  --bd-fde68a: #fde68a;
+  --bd-fecaca: #fecaca;
+  --bd-fed7aa: #fed7aa;
+  --bg-0f172a: #0f172a;
+  --bg-bbf7d0: #bbf7d0;
+  --bg-dcfce7: #dcfce7;
+  --bg-e2e8f0: #e2e8f0;
+  --bg-eff6ff: #eff6ff;
+  --bg-f0fdf4: #f0fdf4;
+  --bg-f1f5f9: #f1f5f9;
+  --bg-f8fafc: #f8fafc;
+  --bg-fdf2f8: #fdf2f8;
+  --bg-fee2e2: #fee2e2;
+  --bg-fef08a: #fef08a;
+  --bg-fef2f2: #fef2f2;
+  --bg-fef3c7: #fef3c7;
+  --bg-fef9c3: #fef9c3;
+  --bg-fff7ed: #fff7ed;
+  --bg-ffffff: #ffffff;
+  --fg-0f172a: #0f172a;
+  --fg-15803d: #15803d;
+  --fg-166534: #166534;
+  --fg-16a34a: #16a34a;
+  --fg-1d4ed8: #1d4ed8;
+  --fg-1e293b: #1e293b;
+  --fg-2563eb: #2563eb;
+  --fg-334155: #334155;
+  --fg-475569: #475569;
+  --fg-64748b: #64748b;
+  --fg-854d0e: #854d0e;
+  --fg-94a3b8: #94a3b8;
+  --fg-991b1b: #991b1b;
+  --fg-a16207: #a16207;
+  --fg-b45309: #b45309;
+  --fg-b91c1c: #b91c1c;
+  --fg-c2410c: #c2410c;
+  --fg-db2777: #db2777;
+  --fg-dc2626: #dc2626;
+  --fg-ef4444: #ef4444;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --page-bg: #0b1220;
+  --overlay: rgba(15, 23, 42, 0.88);
+  --nav-bg: rgba(11, 18, 32, 0.9);
+  --focus-ring: rgba(74, 222, 128, 0.4);
+  --shadow-card: 0 10px 25px rgba(0, 0, 0, 0.35);
+  --bd-86efac: rgba(34,197,94,0.45);
+  --bd-bbf7d0: rgba(34,197,94,0.35);
+  --bd-bfdbfe: rgba(59,130,246,0.35);
+  --bd-cbd5e1: #3b4a63;
+  --bd-e2e8f0: #263248;
+  --bd-ef4444: #ef4444;
+  --bd-f1f5f9: #1e293b;
+  --bd-f87171: rgba(239,68,68,0.55);
+  --bd-fde68a: rgba(245,158,11,0.35);
+  --bd-fecaca: rgba(239,68,68,0.35);
+  --bd-fed7aa: rgba(249,115,22,0.35);
+  --bg-0f172a: #334155;
+  --bg-bbf7d0: rgba(34,197,94,0.22);
+  --bg-dcfce7: rgba(34,197,94,0.18);
+  --bg-e2e8f0: #334155;
+  --bg-eff6ff: rgba(59,130,246,0.14);
+  --bg-f0fdf4: rgba(34,197,94,0.12);
+  --bg-f1f5f9: #1e293b;
+  --bg-f8fafc: #0f172a;
+  --bg-fdf2f8: rgba(236,72,153,0.14);
+  --bg-fee2e2: rgba(239,68,68,0.18);
+  --bg-fef08a: rgba(234,179,8,0.22);
+  --bg-fef2f2: rgba(239,68,68,0.12);
+  --bg-fef3c7: rgba(245,158,11,0.16);
+  --bg-fef9c3: rgba(234,179,8,0.16);
+  --bg-fff7ed: rgba(249,115,22,0.12);
+  --bg-ffffff: #131c2e;
+  --fg-0f172a: #f1f5f9;
+  --fg-15803d: #4ade80;
+  --fg-166534: #86efac;
+  --fg-16a34a: #4ade80;
+  --fg-1d4ed8: #60a5fa;
+  --fg-1e293b: #e2e8f0;
+  --fg-2563eb: #60a5fa;
+  --fg-334155: #cbd5e1;
+  --fg-475569: #b4c0d0;
+  --fg-64748b: #94a3b8;
+  --fg-854d0e: #fde047;
+  --fg-94a3b8: #7d8ba1;
+  --fg-991b1b: #fca5a5;
+  --fg-a16207: #facc15;
+  --fg-b45309: #fbbf24;
+  --fg-b91c1c: #f87171;
+  --fg-c2410c: #fb923c;
+  --fg-db2777: #f472b6;
+  --fg-dc2626: #f87171;
+  --fg-ef4444: #f87171;
+}
 /* รีเซ็ตขอบหน้าจอ ให้แบนเนอร์สีเขียวยืดเต็มจอ 100% ไม่มีขอบขาว */
 html, body {
   margin: 0 !important;
@@ -10,6 +124,282 @@ html, body {
 
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+
+/* ===== พื้นฐานทั้งเว็บ (ใช้ร่วมทั้ง 2 ธีม) ===== */
+body {
+  background-color: var(--page-bg);
+  color: var(--fg-0f172a);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+input, select, textarea {
+  background-color: var(--bg-ffffff);
+  color: var(--fg-0f172a);
+  border-color: var(--bd-cbd5e1);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--fg-94a3b8);
+  opacity: 1;
+}
+
+/* โฟกัสชัดเจนเวลาใช้คีย์บอร์ด (Accessibility) */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #16a34a !important;
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+a:focus-visible, button:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button, a {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+::selection {
+  background: rgba(22, 163, 74, 0.25);
+}
+
+/* ลิงก์ข้ามไปเนื้อหา (แสดงเมื่อกด Tab) */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 8px;
+  z-index: 100;
+  background: #15803d;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.skip-link:focus {
+  left: 8px;
+}
+
+/* ===== แถบเมนูหลัก ===== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--bd-e2e8f0);
+  backdrop-filter: saturate(160%) blur(10px);
+  -webkit-backdrop-filter: saturate(160%) blur(10px);
+}
+
+.site-nav {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--fg-15803d);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--fg-475569);
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  padding: 7px 12px;
+  border-radius: 999px;
+}
+.nav-link:hover {
+  background: var(--bg-f1f5f9);
+}
+.nav-link.is-active {
+  background: var(--bg-f0fdf4);
+  color: var(--fg-15803d);
+}
+.nav-amber { color: var(--fg-b45309); font-weight: 700; }
+.nav-blue { color: var(--fg-1d4ed8); font-weight: 700; }
+.nav-green { color: var(--fg-15803d); font-weight: 700; }
+
+.nav-user {
+  color: var(--fg-334155);
+  font-size: 14px;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
+}
+
+.nav-logout {
+  background: var(--bg-fef2f2);
+  color: var(--fg-dc2626);
+  border: 1px solid var(--bd-fecaca);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.nav-logout:hover {
+  background: var(--bg-fee2e2);
+}
+
+.nav-cta {
+  text-decoration: none;
+  background: #15803d;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.nav-cta:hover {
+  background: #166534;
+}
+
+.nav-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+  padding-left: 8px;
+  border-left: 1px solid var(--bd-e2e8f0);
+}
+
+.tool-btn {
+  height: 34px;
+  min-width: 34px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--bd-e2e8f0);
+  background: var(--bg-f8fafc);
+  color: var(--fg-334155);
+  font-size: 15px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.tool-btn:hover {
+  background: var(--bg-f1f5f9);
+  border-color: var(--bd-cbd5e1);
+}
+.lang-btn {
+  font-size: 12.5px;
+  letter-spacing: 0.3px;
+}
+.lang-btn span {
+  color: var(--fg-94a3b8);
+}
+.lang-btn span.on {
+  color: var(--fg-15803d);
+}
+.lang-btn .sep {
+  margin: 0 1px;
+}
+
+/* ===== ส่วนท้ายเว็บ ===== */
+.site-footer {
+  border-top: 1px solid var(--bd-e2e8f0);
+  background: var(--bg-ffffff);
+  padding: 28px 20px 32px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--fg-64748b);
+}
+.footer-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+.footer-brand {
+  font-weight: 600;
+  color: var(--fg-334155);
+}
+.footer-meta {
+  font-size: 12.5px;
+  color: var(--fg-94a3b8);
+}
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  justify-content: center;
+  margin-top: 6px;
+}
+.footer-links a {
+  color: var(--fg-475569);
+  text-decoration: none;
+  font-weight: 600;
+}
+.footer-links a:hover {
+  color: var(--fg-15803d);
+}
+
+/* แถบเลื่อนให้เข้ากับธีม */
+[data-theme='dark'] ::-webkit-scrollbar { width: 10px; height: 10px; }
+[data-theme='dark'] ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+[data-theme='dark'] ::-webkit-scrollbar-track { background: #0b1220; }
+
+/* รูปในโหมดมืดลดความจ้าเล็กน้อย */
+[data-theme='dark'] img {
+  filter: brightness(0.92);
+}
+
+/* ลดการเคลื่อนไหวสำหรับผู้ที่ตั้งค่าไว้ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ข้อความที่แสดงเฉพาะบนมือถือ */
+.show-mobile {
+  display: none;
 }
 
 /* ===== รองรับหน้าจอมือถือ (Responsive) ===== */
@@ -68,6 +458,29 @@ input, select, textarea, button {
   .site-links a {
     font-size: 13px !important;
   }
+  .site-links {
+    gap: 2px !important;
+  }
+  .nav-link {
+    padding: 6px 7px !important;
+  }
+  .nav-tools {
+    margin-left: 0;
+    padding-left: 4px;
+    gap: 4px;
+  }
+  .tool-btn {
+    height: 30px;
+    min-width: 30px;
+    padding: 0 7px;
+    font-size: 13px;
+  }
+  .lang-btn {
+    font-size: 11px;
+  }
+  .nav-logout {
+    padding: 4px 9px;
+  }
 
   /* แถบเมนูเจ้าหน้าที่บนมือถือ: บรรทัดเดียว เลื่อนซ้ายขวาได้ */
   .admin-bar {
@@ -76,6 +489,13 @@ input, select, textarea, button {
   }
   .hide-mobile {
     display: none !important;
+  }
+  .show-mobile {
+    display: inline !important;
+  }
+  .site-links button {
+    padding: 4px 10px !important;
+    font-size: 13px !important;
   }
   .admin-tabs {
     min-width: 0;
@@ -90,5 +510,16 @@ input, select, textarea, button {
   }
   .logout-text {
     display: none;
+  }
+}
+
+/* จอเล็กมาก (มือถือขนาดเล็ก): ซ่อนชื่อแบรนด์ เหลือโลโก้ 🐾 */
+@media (max-width: 400px) {
+  .brand-text {
+    display: none;
+  }
+  .nav-tools {
+    border-left: none;
+    padding-left: 0;
   }
 }

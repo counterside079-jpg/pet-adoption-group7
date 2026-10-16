@@ -1,0 +1,47 @@
+<app-admin-nav active="logs"></app-admin-nav>
+
+<div style="max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px;">
+  <h1 class="page-title" style="font-size: 28px; font-weight: 800; color: var(--fg-0f172a); margin: 0 0 4px;">{{ '🕘 ประวัติการทำงานของเจ้าหน้าที่' | t }}</h1>
+  <p style="color: var(--fg-64748b); margin: 0 0 18px;">{{ 'บันทึกอัตโนมัติทุกครั้งที่มีการเพิ่ม แก้ไข ลบ กู้คืน อัปโหลดรูป หรือเปลี่ยนสถานะ (แสดงล่าสุด 500 รายการ)' | t }}</p>
+
+  <form (ngSubmit)="load()" style="display: flex; flex-wrap: wrap; gap: 8px; background: var(--bg-ffffff); border: 1px solid var(--bd-e2e8f0); border-radius: 16px; padding: 12px; margin-bottom: 18px;">
+    <select name="targetType" [(ngModel)]="targetType" style="padding: 9px 12px; border-radius: 10px; border: 1px solid var(--bd-cbd5e1); font-family: inherit;">
+      <option value="">{{ 'ทุกประเภทข้อมูล' | t }}</option>
+      <option *ngFor="let t of targetTypes" [value]="t">{{ (targetTh[t]) | t }}</option>
+    </select>
+    <input name="targetId" [(ngModel)]="targetId" [placeholder]="'รหัสรายการ เช่น 12' | t" style="width: 150px; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--bd-cbd5e1); font-family: inherit;" />
+    <input name="q" [(ngModel)]="q" [placeholder]="'ค้นจากรายละเอียด เช่น ชื่อสัตว์ / ชื่อผู้ขอ' | t" style="flex: 1; min-width: 200px; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--bd-cbd5e1); font-family: inherit;" />
+    <button type="submit" style="background: #15803d; color: #fff; border: none; padding: 9px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit;">{{ 'ค้นหา' | t }}</button>
+    <button type="button" (click)="clear()" style="background: var(--bg-f1f5f9); color: var(--fg-334155); border: 1px solid var(--bd-e2e8f0); padding: 9px 14px; border-radius: 10px; cursor: pointer; font-family: inherit;">{{ 'ล้าง' | t }}</button>
+  </form>
+
+  <div *ngIf="loading" style="text-align: center; padding: 50px 0; color: var(--fg-64748b);">{{ 'กำลังโหลด...' | t }}</div>
+  <div *ngIf="errorMessage" style="background: var(--bg-fef2f2); color: var(--fg-b91c1c); padding: 14px; border-radius: 12px;">⚠️ {{ (errorMessage) | t }}</div>
+  <div *ngIf="!loading && !errorMessage && !logs.length" style="text-align: center; padding: 50px 0; color: var(--fg-94a3b8);">{{ 'ไม่พบบันทึก' | t }}</div>
+
+  <div *ngIf="!loading && logs.length" style="background: var(--bg-ffffff); border: 1px solid var(--bd-e2e8f0); border-radius: 16px; overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 720px;">
+      <thead>
+        <tr style="background: var(--bg-f8fafc); color: var(--fg-475569); text-align: left;">
+          <th style="padding: 10px 14px;">{{ 'เวลา' | t }}</th>
+          <th style="padding: 10px 14px;">{{ 'เจ้าหน้าที่' | t }}</th>
+          <th style="padding: 10px 14px;">{{ 'การกระทำ' | t }}</th>
+          <th style="padding: 10px 14px;">{{ 'ข้อมูล' | t }}</th>
+          <th style="padding: 10px 14px;">{{ 'รายละเอียด' | t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let l of logs" style="border-top: 1px solid var(--bd-f1f5f9); vertical-align: top;">
+          <td style="padding: 10px 14px; white-space: nowrap; color: var(--fg-64748b);">{{ l.createdAt | tdate: 'd MMM y HH:mm:ss' }}</td>
+          <td style="padding: 10px 14px;">
+            <div style="font-weight: 600;">{{ (l.user?.fullName || 'ไม่ทราบ') | t }}</div>
+            <div style="font-size: 12px; color: var(--fg-94a3b8);">{{ (l.user?.email || 'บัญชีถูกลบ') | t }}</div>
+          </td>
+          <td style="padding: 10px 14px; white-space: nowrap; font-weight: 700;" [style.color]="color(l.action)">{{ (actionTh[l.action] || l.action) | t }}</td>
+          <td style="padding: 10px 14px; white-space: nowrap;">{{ (targetTh[l.targetType] || l.targetType) | t }} <span *ngIf="l.targetId" style="color: var(--fg-94a3b8);">#{{ (l.targetId) | t }}</span></td>
+          <td style="padding: 10px 14px; color: var(--fg-334155);">{{ (l.detail) | t }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -30,10 +30,16 @@ export class RequestService {
     return this.http.post<AdoptionRequest>(this.adoptUrl, data).pipe(timeout(20000));
   }
 
-  getAdoptions(status?: string): Observable<AdoptionRequest[]> {
-    return this.http
-      .get<AdoptionRequest[]>(this.adoptUrl, { params: this.statusParams(status) })
-      .pipe(timeout(20000));
+  // q = ค้นหาจากชื่อผู้ขอ อีเมล เบอร์โทร หรือชื่อสัตว์
+  getAdoptions(status?: string, q?: string): Observable<AdoptionRequest[]> {
+    let params = this.statusParams(status);
+    if (q && q.trim()) params = params.set('q', q.trim());
+    return this.http.get<AdoptionRequest[]>(this.adoptUrl, { params }).pipe(timeout(20000));
+  }
+
+  // คำขอของผู้ใช้ที่เข้าสู่ระบบอยู่
+  getMyAdoptions(): Observable<AdoptionRequest[]> {
+    return this.http.get<AdoptionRequest[]>(`${this.adoptUrl}/mine`).pipe(timeout(20000));
   }
 
   updateAdoptionStatus(id: number, status: AdoptionRequestStatus): Observable<AdoptionRequest> {

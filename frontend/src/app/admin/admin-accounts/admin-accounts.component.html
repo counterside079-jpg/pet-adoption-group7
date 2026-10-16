@@ -1,0 +1,36 @@
+<app-admin-nav active="accounts"></app-admin-nav>
+
+<div style="max-width: 1000px; margin: 0 auto; padding: 28px 16px 60px;">
+  <h1 class="page-title" style="font-size: 28px; font-weight: 800; color: var(--fg-0f172a); margin: 0 0 4px;">{{ '👮 บัญชีเจ้าหน้าที่' | t }}</h1>
+  <p style="color: var(--fg-64748b); margin: 0 0 20px;">{{ 'เจ้าหน้าที่แต่ละคนเข้าสู่ระบบด้วยบัญชีของตัวเอง งานที่ทำจะถูกบันทึกในชื่อผู้ทำ (ดูได้ที่ “ประวัติการทำงาน”)' | t }}</p>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; align-items: start;">
+    <div style="background: var(--bg-ffffff); border: 1px solid var(--bd-e2e8f0); border-radius: 16px; padding: 18px;">
+      <h2 style="font-size: 17px; margin: 0 0 12px;">{{ 'รายชื่อเจ้าหน้าที่ (' | t }}{{ admins.length }})</h2>
+      <div *ngIf="loading" style="color: var(--fg-64748b);">{{ 'กำลังโหลด...' | t }}</div>
+      <div *ngIf="errorMessage" style="color: var(--fg-b91c1c);">⚠️ {{ (errorMessage) | t }}</div>
+      <div *ngFor="let u of admins" style="display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--bd-f1f5f9);">
+        <div>
+          <div style="font-weight: 700;">{{ (u.fullName) | t }} <span *ngIf="u.id === auth.user()?.id" style="font-size: 12px; color: var(--fg-15803d);">{{ '(คุณ)' | t }}</span></div>
+          <div style="font-size: 13px; color: var(--fg-64748b);">{{ (u.email) | t }} {{ (u.phone ? '· ' + u.phone : '') | t }}</div>
+        </div>
+        <button *ngIf="u.id !== auth.user()?.id" type="button" (click)="remove(u)"
+          style="background: var(--bg-fef2f2); color: var(--fg-dc2626); border: 1px solid var(--bd-fecaca); padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap;">{{ 'ถอนสิทธิ์' | t }}</button>
+      </div>
+    </div>
+
+    <form (ngSubmit)="add()" style="background: var(--bg-ffffff); border: 1px solid var(--bd-e2e8f0); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 8px;">
+      <h2 style="font-size: 17px; margin: 0 0 4px;">{{ '➕ เพิ่มเจ้าหน้าที่' | t }}</h2>
+      <p style="font-size: 12.5px; color: var(--fg-64748b); margin: 0 0 6px;">{{ 'ถ้าอีเมลนี้สมัครสมาชิกไว้แล้ว ระบบจะยกระดับบัญชีนั้นเป็นเจ้าหน้าที่ (รหัสผ่านเดิมของเขาไม่เปลี่ยน)' | t }}</p>
+      <input name="fullName" [(ngModel)]="form.fullName" [placeholder]="'ชื่อ-นามสกุล' | t" style="padding: 10px 12px; border-radius: 10px; border: 1px solid var(--bd-cbd5e1); font-family: inherit;" />
+      <input name="email" type="email" [(ngModel)]="form.email" [placeholder]="'อีเมล' | t" style="padding: 10px 12px; border-radius: 10px; border: 1px solid var(--bd-cbd5e1); font-family: inherit;" />
+      <input name="phone" [(ngModel)]="form.phone" [placeholder]="'เบอร์โทร (ไม่บังคับ)' | t" style="padding: 10px 12px; border-radius: 10px; border: 1px solid var(--bd-cbd5e1); font-family: inherit;" />
+      <input name="password" type="password" [(ngModel)]="form.password" [placeholder]="'รหัสผ่านเริ่มต้น (อย่างน้อย 6 ตัว)' | t" autocomplete="new-password" style="padding: 10px 12px; border-radius: 10px; border: 1px solid var(--bd-cbd5e1); font-family: inherit;" />
+      <div *ngIf="formError" style="color: var(--fg-dc2626); font-size: 13px; white-space: pre-line;">⚠️ {{ (formError) | t }}</div>
+      <div *ngIf="formOk" style="color: var(--fg-15803d); font-size: 13px;">✅ {{ (formOk) | t }}</div>
+      <button type="submit" [disabled]="saving" style="background: #15803d; color: #fff; border: none; padding: 11px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit;">
+        {{ (saving ? 'กำลังบันทึก...' : 'เพิ่มเจ้าหน้าที่') | t }}
+      </button>
+    </form>
+  </div>
+</div>
