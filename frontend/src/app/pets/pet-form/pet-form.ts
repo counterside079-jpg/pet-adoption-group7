@@ -15,6 +15,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { PetService } from '../../services/pet.service';
 import { PetImageRef, PetType } from '../../models/pet.model';
 import { petImageUrl } from '../../services/pet-image';
+import { breedSuggestions } from '../breeds';
 
 export function noWhitespaceValidator(control: AbstractControl): ValidationErrors | null {
   const isWhitespace = (control.value || '').toString().trim().length === 0;
@@ -34,6 +35,12 @@ export class PetFormComponent implements OnInit {
   petId: number | null = null;
   originalStatus: string = '';
   petTypes: PetType[] = [];
+
+  // คำแนะนำช่องสายพันธุ์ ตามประเภทที่เลือก (เป็นแค่ตัวช่วย ยังพิมพ์เองได้)
+  get breedOptions(): string[] {
+    const id = Number(this.petForm?.value?.petTypeId);
+    return breedSuggestions(this.petTypes.find((t) => t.id === id)?.name);
+  }
 
   loading: boolean = false;
   backendError: string = '';

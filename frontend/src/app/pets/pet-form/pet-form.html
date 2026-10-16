@@ -142,9 +142,15 @@
       <input
         type="text"
         formControlName="breed"
+        list="breed-options"
+        autocomplete="off"
         [placeholder]="'เช่น ไซบีเรียน, โกลเด้น, ไทยแท้' | t"
         style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--bd-cbd5e1); border-radius: 8px;"
       />
+      <datalist id="breed-options">
+        <option *ngFor="let b of breedOptions" [value]="b"></option>
+      </datalist>
+      <small style="display: block; margin-top: 4px; font-size: 12px; color: var(--fg-64748b);">{{ 'พิมพ์แล้วเลือกจากรายการได้ หรือพิมพ์เองถ้าไม่มีในรายการ' | t }}</small>
     </div>
 
     <!-- รูปภาพ (อัปโหลดได้หลายรูป รูปแรกคือรูปปก) -->

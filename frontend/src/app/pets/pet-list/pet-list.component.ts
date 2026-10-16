@@ -8,6 +8,7 @@ import { PetService } from '../../services/pet.service';
 import { Pet } from '../../models/pet.model';
 import { matchesPet } from '../../services/pet-search';
 import { petCover } from '../../services/pet-image';
+import { ALL_BREEDS } from '../breeds';
 
 @Component({
   selector: 'app-pet-list',
@@ -34,16 +35,7 @@ export class PetListComponent implements OnInit {
   // และแสดงเฉพาะคำที่กดแล้วเจออย่างน้อย 1 ตัว (ไม่ใช้คำตายตัว เพราะถ้าไม่มีสัตว์ตรงคำนั้นจะเจอหน้าว่าง)
   private static readonly TRAITS = ['ขี้อ้อน', 'ขี้เล่น', 'ร่าเริง', 'เชื่อง', 'ใจดี', 'ซน', 'ฉลาด', 'เรียบร้อย', 'ขี้เซา', 'ชอบเล่น', 'เป็นมิตร', 'สงบ'];
 
-  private static readonly BREEDS = [
-    // สุนัข
-    'โกลเด้น', 'ลาบราดอร์', 'ชิวาวา', 'ปอมเมอเรเนียน', 'ชิสุ', 'พุดเดิ้ล', 'บีเกิ้ล', 'ไซบีเรียน', 'คอร์กี้', 'ชิบะ', 'บางแก้ว', 'หลังอาน', 'เฟรนช์บูลด็อก', 'ยอร์คเชียร์',
-    // แมว
-    'เปอร์เซีย', 'สก็อตติชโฟลด์', 'วิเชียรมาศ', 'ขาวมณี', 'โคราช', 'บริติชช็อตแฮร์', 'เมนคูน', 'แร็กดอลล์', 'อเมริกันช็อตแฮร์', 'เบงกอล',
-    // กระต่าย
-    'ฮอลแลนด์ลอป', 'เนเธอร์แลนด์ดวาร์ฟ', 'ไลอ้อนเฮด', 'มินิเร็กซ์',
-    // นก / หนู / ปลา / เต่า
-    'หงส์หยก', 'ค็อกคาเทล', 'เลิฟเบิร์ด', 'แก้วมาคอว์', 'ไจแอนท์', 'ซีเรียน', 'วินเทอร์ไวท์', 'ปลาทอง', 'ปลากัด', 'ซูคาต้า',
-  ];
+  private static readonly BREEDS = ALL_BREEDS;
 
   get searchExamples(): string[] {
     const en = this.i18n.isEn();

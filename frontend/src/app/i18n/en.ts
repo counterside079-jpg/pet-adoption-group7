@@ -442,4 +442,7 @@ export const EN: Record<string, string> = {
   "เต่า": "Turtle",
   "อื่นๆ": "Other",
   "กำลังใช้งานในชื่อ": "Signed in as",
+  'พิมพ์แล้วเลือกจากรายการได้ หรือพิมพ์เองถ้าไม่มีในรายการ': 'Type to pick from the list, or enter your own if it is not listed',
+  'พันธุ์ผสม': 'Mixed breed',
+  'ไม่ทราบสายพันธุ์': 'Unknown breed',
 };
