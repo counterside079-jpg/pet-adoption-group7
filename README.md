@@ -4,6 +4,42 @@
 
 ---
 
+## 🧑‍🏫 สำหรับผู้ตรวจ: ทดสอบระบบได้ 2 วิธี
+
+### วิธีที่ 1 ทดสอบบนเว็บออนไลน์ (ไม่ต้องติดตั้ง)
+* หน้าเว็บ: https://pet-adoption-group7-web.onrender.com
+* API: https://pet-adoption-group7-api.onrender.com/api/pets
+* เปิดครั้งแรกอาจต้องรอประมาณ 1 นาที เพราะ Render แบบฟรีพักเครื่องเมื่อไม่มีคนใช้
+* บัญชีทดสอบอยู่ในหัวข้อ "บัญชีทดสอบ" ด้านล่าง
+
+### วิธีที่ 2 ติดตั้งบนเครื่องของผู้ตรวจ (ประมาณ 10 นาที)
+**สิ่งที่ต้องมี**
+* Node.js 22 ขึ้นไป (แนะนำ 24 LTS จาก https://nodejs.org) ตรวจด้วย `node -v`
+* ฐานข้อมูล PostgreSQL ว่าง 1 ฐาน เลือกแบบใดแบบหนึ่ง
+  * **Neon (ฟรี ไม่ต้องติดตั้ง):** สมัครที่ https://neon.tech → Create project → กด Connect แล้วคัดลอก connection string ที่ขึ้นต้นด้วย `postgresql://`
+  * **PostgreSQL ในเครื่อง:** สร้างฐานข้อมูลชื่อ `pet_adoption`
+
+**ขั้นตอน** (ถ้าใช้ Windows แล้ว npm ขึ้น "running scripts is disabled" ให้รัน `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force` ครั้งเดียว)
+```bash
+# Terminal ที่ 1: Backend
+cd backend
+copy .env.example .env        # macOS/Linux ใช้: cp .env.example .env
+# เปิดไฟล์ .env แก้ DATABASE_URL เป็น connection string ของคุณ และตั้ง JWT_SECRET
+npm install
+npx prisma generate
+npx prisma db push            # สร้างตารางทั้ง 7
+npx prisma db seed            # ใส่ประเภทสัตว์ สัตว์ตัวอย่าง และบัญชีทดสอบ 3 บัญชี
+npm run start:dev             # รอจนขึ้น "Backend พร้อมทำงานแล้วที่: http://localhost:3000/api"
+
+# Terminal ที่ 2: Frontend
+cd frontend
+npm install
+npm start                     # แล้วเปิด http://localhost:4200
+```
+เมื่อเปิดผ่าน localhost หน้าเว็บจะเรียก API ที่ `http://localhost:3000/api` ให้เอง ไม่ต้องแก้โค้ด ลำดับการทดสอบแนะนำอยู่ในหัวข้อ "ทดสอบติดตั้งบนเครื่องใหม่" ท้ายไฟล์
+
+---
+
 ## 👥 รายชื่อสมาชิกในกลุ่ม
 
 | ลำดับ | รหัสนักศึกษา | ชื่อ - นามสกุล | บทบาทหน้าที่ |
@@ -23,9 +59,11 @@
 ---
 
 ## 🛠️ เทคโนโลยีที่ใช้ (Tech Stack)
-* **Frontend:** Angular, TypeScript, Reactive Forms, HTML Inline Styles (CSS)
-* **Backend:** NestJS (Node.js Framework), TypeScript, Class-Validator, Class-Transformer
-* **Database & ORM:** PostgreSQL, Prisma ORM (v6.19.0)
+* **Frontend:** Angular 22, TypeScript, Reactive Forms, CSS Variables (โหมดสว่าง/มืด), ระบบแปลภาษาไทย/อังกฤษ
+* **Backend:** NestJS 10 (Node.js Framework), TypeScript, Class-Validator, Class-Transformer, Multer (อัปโหลดรูป)
+* **ความปลอดภัย:** Node.js crypto (รหัสผ่าน scrypt + salt, token แบบ HMAC-SHA256 อายุ 7 วัน), Guard ตรวจสิทธิ์สมาชิก/เจ้าหน้าที่
+* **Database & ORM:** PostgreSQL (Neon), Prisma ORM (v6.19.0)
+* **Hosting:** Render (Backend = Web Service, Frontend = Static Site)
 * **Architecture:** RESTful API Architecture
 
 ---
@@ -180,7 +218,7 @@ npm start
 > รหัสผ่านเก็บในฐานข้อมูลแบบ hash (scrypt + salt) ไม่เก็บรหัสจริง · token มีอายุ 7 วัน · ควรเปลี่ยนรหัสบัญชีทดสอบก่อนใช้งานจริง
 
 ## ✅ ทดสอบติดตั้งบนเครื่องใหม่ (Fresh Install Checklist)
-1. ติดตั้ง Node.js 20+ และมีฐานข้อมูล PostgreSQL (ในเครื่องหรือ Neon)
+1. ติดตั้ง Node.js 22 ขึ้นไป และมีฐานข้อมูล PostgreSQL ว่าง (ในเครื่องหรือ Neon)
 2. ทำตามขั้นตอนติดตั้งด้านบน (`npm install` → `.env` → `prisma generate` → `db push` → `db seed` → `start:dev`)
 3. เปิด `http://localhost:3000/api/pets` ต้องเห็นข้อมูล JSON ของสัตว์ตัวอย่าง
 4. เปิด `http://localhost:4200` → สมัครสมาชิกใหม่ → ส่งคำขอรับเลี้ยง → ดูสถานะที่ "คำขอของฉัน"
